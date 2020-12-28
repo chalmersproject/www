@@ -1,0 +1,16 @@
+[build]
+publish = "dist"
+command = "yarn build"
+
+
+# Proxy GraphQL API requests.
+[[redirects]]
+from = "/api/graphql"
+to = "https://api.chalmersproject.com/graphql"
+status = 200
+
+
+# Redirect unmatched paths to the 404 page.
+[[redirects]]
+from = "/*"
+to = "/404.html"
