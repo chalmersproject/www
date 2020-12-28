@@ -5,7 +5,7 @@ import isEmpty from "lodash/isEmpty";
 import { Box, BoxProps, VStack } from "@chakra-ui/react";
 import { Button } from "@chakra-ui/react";
 import { Skeleton } from "@chakra-ui/react";
-import { Heading } from "@chakra-ui/react";
+import { Text, Heading } from "@chakra-ui/react";
 
 import { ShelterForm } from "components/shelter-form";
 import { ShelterCard, SHELTER_CARD_FRAGMENTS } from "components/shelter-card";
@@ -51,21 +51,25 @@ export const ShelterList: FC<ShelterListProps> = ({
             {shelters?.map(shelter => (
               <ShelterCard
                 key={shelter.id}
-                onDelete={refetch}
+                onDelete={() => refetch()}
                 {...{ viewer, shelter }}
               />
             ))}
           </VStack>
         ) : (
           <Box p={4} borderRadius="md" bg="gray.100">
-            No shelters registered.
+            <Text fontWeight="medium" color="gray.500">
+              No shelters registered.
+            </Text>
           </Box>
         )
       ) : (
-        [...new Array(3)].map((_, index) => <Skeleton key={index} h={32} />)
+        [...new Array(3)].map((_, index) => (
+          <Skeleton key={index} h={32} borderRadius="md" />
+        ))
       )}
       {viewer?.isAdmin && (
-        <ShelterForm>
+        <ShelterForm onCreate={() => refetch()}>
           {({ onOpen }) => (
             <Button onClick={onOpen} colorScheme="pink" mt={3}>
               New Shelter

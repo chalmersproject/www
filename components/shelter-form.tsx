@@ -16,9 +16,20 @@ import {
   HiPhotograph,
 } from "react-icons/hi";
 
-import { Box, BoxProps, HStack, VStack, SimpleGrid } from "@chakra-ui/react";
+import {
+  Box,
+  BoxProps,
+  HStack,
+  VStack,
+  SimpleGrid,
+  Center,
+  Tag,
+  Spacer,
+} from "@chakra-ui/react";
+import { Text } from "@chakra-ui/react";
 import { Skeleton } from "@chakra-ui/react";
 import { Button } from "@chakra-ui/react";
+import { Image } from "@chakra-ui/react";
 import { useBreakpointValue } from "@chakra-ui/react";
 import { useDisclosure, UseDisclosureReturn } from "@chakra-ui/react";
 
@@ -227,6 +238,7 @@ export const ShelterForm: FC<ShelterFormProps> = ({
 
   const {
     register,
+    watch,
     control,
     errors: formErrors,
     formState: { isValid },
@@ -261,6 +273,7 @@ export const ShelterForm: FC<ShelterFormProps> = ({
   );
 
   const isNew = !shelterId;
+  const imageUrl = watch("imageUrl", defaults?.imageUrl);
   const Controller = useTypedController<ShelterFormValues>({ control });
   const renderForm = () => {
     if (queryLoading) {
@@ -387,6 +400,21 @@ export const ShelterForm: FC<ShelterFormProps> = ({
             />
           </InputGroup>
           <FormErrorMessage errors={formErrors} name="imageUrl" />
+          {imageUrl && (
+            <HStack align="flex-start" mt={3}>
+              <Text fontSize="sm" fontWeight="medium">
+                Preview:
+              </Text>
+              <Spacer />
+              <Image
+                src={imageUrl}
+                alt="Shelter Image Preview"
+                fit="cover"
+                boxSize={32}
+                borderRadius="md"
+              />
+            </HStack>
+          )}
         </FormControl>
         <FormControl isInvalid={!!formErrors.address}>
           <FormLabel>Address</FormLabel>

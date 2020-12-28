@@ -1,10 +1,12 @@
 import React, { FC, useMemo } from "react";
 import { gql } from "@apollo/client";
 
-import { Box, BoxProps } from "@chakra-ui/react";
+import { Box, BoxProps, Flex, HStack, VStack } from "@chakra-ui/react";
+import { AspectRatio } from "@chakra-ui/react";
 import { Wrap, WrapItem } from "@chakra-ui/react";
 import { Tag } from "@chakra-ui/react";
 import { Text } from "@chakra-ui/react";
+import { Image } from "@chakra-ui/react";
 
 import { ShelterForm, ShelterFormProps } from "components/shelter-form";
 
@@ -41,7 +43,7 @@ export const ShelterCard: FC<ShelterCardProps> = ({
   ...otherProps
 }) => {
   const { isAdmin } = viewer ?? {};
-  const { id, name, about, tags } = shelter ?? {};
+  const { id, name, about, imageUrl, tags } = shelter ?? {};
   const sortedTags = useMemo(() => (tags ? [...tags].sort() : undefined), [
     tags,
   ]);
@@ -52,11 +54,11 @@ export const ShelterCard: FC<ShelterCardProps> = ({
       {...{ onCreate, onUpdate, onDelete }}
     >
       {({ onOpen }) => (
-        <Box
+        <HStack
           onClick={() => onOpen()}
-          p={4}
           borderRadius="md"
           cursor="pointer"
+          p={4}
           bg="gray.50"
           transition="background-color"
           transitionTimingFunction="ease-in-out"
@@ -64,22 +66,36 @@ export const ShelterCard: FC<ShelterCardProps> = ({
           _hover={{ bg: "gray.100" }}
           {...otherProps}
         >
-          <Text fontSize="lg" fontWeight="medium" color="gray.900">
-            {name}
-          </Text>
-          <Text fontSize="base" color="gray.500">
-            {about}
-          </Text>
-          {sortedTags && (
-            <Wrap mt={2}>
-              {sortedTags.map(tag => (
-                <WrapItem key={tag}>
-                  <Tag colorScheme="pink">{tag}</Tag>
-                </WrapItem>
-              ))}
-            </Wrap>
+          <VStack align="flex-start" flex={1}>
+            <Box>
+              <Text fontSize="lg" fontWeight="medium" color="gray.900">
+                {name}
+              </Text>
+              <Text noOfLines={3} fontSize="base" color="gray.500">
+                {about}
+              </Text>
+            </Box>
+            {sortedTags && (
+              <Wrap spacing={1.5} mt={2}>
+                {sortedTags.map(tag => (
+                  <WrapItem key={tag}>
+                    <Tag colorScheme="pink">{tag}</Tag>
+                  </WrapItem>
+                ))}
+              </Wrap>
+            )}
+          </VStack>
+          {imageUrl && (
+            <Image
+              src={imageUrl}
+              alt={name}
+              fit="cover"
+              boxSize="32"
+              borderRadius="md"
+              bg="gray.200"
+            />
           )}
-        </Box>
+        </HStack>
       )}
     </ShelterForm>
   );
