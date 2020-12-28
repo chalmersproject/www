@@ -93,8 +93,6 @@ export const useLogin = (): (() => Promise<void>) | null => {
         if (!additionalUserInfo) {
           throw new Error("Missing profile info from provider.");
         }
-
-        await new Promise(resolve => setTimeout(resolve, 250));
         const viewer = await getViewer(client);
 
         const {
@@ -112,12 +110,23 @@ export const useLogin = (): (() => Promise<void>) | null => {
           imageUrl,
         };
         if (viewer) {
-          updateUserAccount(client, params);
+          await updateUserAccount(client, params);
         } else {
-          createUserAccount(client, params);
+          await createUserAccount(client, params);
         }
+
+        await client.resetStore();
       }
     : null;
 };
 
-export const useLogout = useFirebaseLogout;
+export const useLogout = (): (() => Promise<void>) | null => {
+  const client = useApolloClient();
+  const logout = useFirebaseLogout();
+  return logout
+    ? async () => {
+        await logout();
+        await client.resetStore();
+      }
+    : null;
+};

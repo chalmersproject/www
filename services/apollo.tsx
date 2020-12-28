@@ -1,4 +1,11 @@
-import React, { FC, RefObject, useEffect, useMemo, useRef } from "react";
+import React, {
+  FC,
+  RefObject,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import {
   ApolloClient as Client,
@@ -10,7 +17,7 @@ import { HttpLink } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { InMemoryCache, NormalizedCacheObject } from "@apollo/client";
 
-import { FirebaseUser, useFirebase, useFirebaseUser } from "services/firebase";
+import { FirebaseUser, useFirebaseUser } from "services/firebase";
 
 /**
  * Create an Apollo Client that can send both authenticated and anonymous
@@ -50,16 +57,19 @@ export const ApolloProvider: FC = ({ children }) => {
   return <Provider client={client}>{children}</Provider>;
 };
 
-export const useResetApolloStoreOnAuthStateChange = (): void => {
+export const useResetApolloStoreOnUserLoad = (): void => {
+  const [loaded, setLoaded] = useState<boolean>(false);
   const client = useApolloClient();
-  const firebase = useFirebase();
+  const user = useFirebaseUser();
   useEffect(() => {
-    if (!firebase) return;
-    return firebase.auth().onAuthStateChanged(() => client.resetStore());
-  }, [firebase]);
+    if (user && !loaded) {
+      client.resetStore();
+      setLoaded(true);
+    }
+  }, [user]);
 };
 
 export const ResetApolloStoreHandler: FC = ({ children }) => {
-  useResetApolloStoreOnAuthStateChange();
+  useResetApolloStoreOnUserLoad();
   return <>{children}</>;
 };

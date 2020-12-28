@@ -57,7 +57,7 @@ export const ShelterList: FC<ShelterListProps> = ({
             ))}
           </VStack>
         ) : (
-          <Box p={2} bg="gray.100">
+          <Box p={4} borderRadius="md" bg="gray.100">
             No shelters registered.
           </Box>
         )
