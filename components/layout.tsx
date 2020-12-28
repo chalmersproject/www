@@ -1,6 +1,8 @@
-import React, { FC, HTMLProps } from "react";
+import React, { FC } from "react";
 
 import { Title } from "components/head";
+import { Header } from "components/header";
+
 import { Box, BoxProps, VStack } from "@chakra-ui/react";
 
 export interface LayoutProps extends BoxProps {
@@ -11,7 +13,7 @@ export const Layout: FC<LayoutProps> = ({ title, children, ...otherProps }) => (
   <>
     {title && <Title>{title}</Title>}
     <Box minH="screen" {...otherProps}>
-      {/* <Header /> */}
+      <Header />
       <VStack as="main" align="stretch">
         {children}
       </VStack>

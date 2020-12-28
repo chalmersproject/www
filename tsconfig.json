@@ -5,6 +5,7 @@
       "pages": ["./pages"],
       "utils": ["./utils"],
       "assets": ["./assets"],
+      "schema": ["./schema"],
       "styles": ["./styles"],
       "services": ["./services"],
       "components": ["./components"]

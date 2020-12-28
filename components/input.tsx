@@ -1,7 +1,9 @@
-import React, { FC } from "react";
+import React, { FC, ComponentProps } from "react";
 import { Icon, IconProps } from "@chakra-ui/react";
 
-export interface InputIconProps extends IconProps {}
+export interface InputIconProps extends IconProps {
+  as: ComponentProps<typeof Icon>["as"];
+}
 
 export const InputIcon: FC<InputIconProps> = ({
   boxSize,
@@ -9,7 +11,7 @@ export const InputIcon: FC<InputIconProps> = ({
   children,
   ...otherProps
 }) => (
-  <Icon boxSize={boxSize ?? 5} color={color ?? "blue.500"} {...otherProps}>
+  <Icon boxSize={boxSize ?? 5} color={color ?? "pink.500"} {...otherProps}>
     {children}
   </Icon>
 );

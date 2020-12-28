@@ -5,14 +5,20 @@ import { FirebaseProvider } from "services/firebase";
 import { ApolloProvider } from "services/apollo";
 import { ChakraProvider } from "services/chakra";
 
-const App: FC<AppProps> = ({ Component, pageProps }) => (
-  <FirebaseProvider>
-    <ApolloProvider>
-      <ChakraProvider>
-        <Component {...pageProps} />
-      </ChakraProvider>
-    </ApolloProvider>
-  </FirebaseProvider>
-);
+import { ResetApolloStoreHandler } from "services/apollo";
+
+const App: FC<AppProps> = ({ Component, pageProps }) => {
+  return (
+    <FirebaseProvider>
+      <ApolloProvider>
+        <ChakraProvider>
+          <ResetApolloStoreHandler>
+            <Component {...pageProps} />
+          </ResetApolloStoreHandler>
+        </ChakraProvider>
+      </ApolloProvider>
+    </FirebaseProvider>
+  );
+};
 
 export default App;

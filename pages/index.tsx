@@ -1,91 +1,35 @@
-import React, { FC, useMemo } from "react";
+import React, { FC } from "react";
 import { gql, useQuery } from "@apollo/client";
 
+import { Container } from "@chakra-ui/react";
+
 import { Layout } from "components/layout";
+import { ShelterList, SHELTER_LIST_FRAGMENTS } from "components/shelter-list";
 
-import { Box, Container, Skeleton, VStack } from "@chakra-ui/react";
-import { Text, Code } from "@chakra-ui/react";
-import { Button } from "@chakra-ui/react";
+import { HomeQuery } from "schema";
 
-import { useFirebaseToken, useFirebaseUser } from "services/firebase";
-import { useLogin, useLogout } from "services/auth";
+export const HOME_QUERY = gql`
+  query HomeQuery {
+    viewer {
+      ...ShelterList_viewer
+    }
+    shelters(limit: 50) {
+      ...ShelterList_shelter
+    }
+  }
 
-import { HomeViewerCard } from "./__generated__/HomeViewerCard";
+  ${SHELTER_LIST_FRAGMENTS}
+`;
 
 const Home: FC = () => {
-  const token = useFirebaseToken();
-  const login = useLogin();
-  const logout = useLogout();
+  const { data, loading, refetch } = useQuery<HomeQuery>(HOME_QUERY);
+  const { viewer, shelters } = data ?? {};
   return (
     <Layout>
-      <Container my={12}>
-        <Text fontSize="xl" fontWeight="semibold">
-          Brand new whip, what's poppin?
-        </Text>
-        <Box my={2}>
-          {token ? (
-            <>
-              <Text fontSize="md" fontWeight="medium">
-                Auth Token
-              </Text>
-              <Code display="block" overflowWrap="break-word">
-                {token ?? "null"}
-              </Code>
-              <Button onClick={logout!} disabled={!logout} mt={2}>
-                Sign Out
-              </Button>
-            </>
-          ) : (
-            <Button
-              onClick={async () => {
-                const credentials = await login!();
-                console.log({ credentials });
-              }}
-              disabled={!login}
-            >
-              Sign In
-            </Button>
-          )}
-        </Box>
-        <ViewerCard />
+      <Container my={4}>
+        <ShelterList {...{ viewer, shelters, loading, refetch }} />
       </Container>
     </Layout>
-  );
-};
-
-const ViewerCard: FC = ({}) => {
-  const user = useFirebaseUser();
-  const { data, loading } = useQuery<HomeViewerCard>(
-    gql`
-      query HomeViewerCard {
-        viewer {
-          id
-          firstName
-          lastName
-          about
-          imageUrl
-          email
-          phone
-          isAdmin
-          isEmailVerified
-          isPhoneVerified
-        }
-      }
-    `,
-    {
-      skip: !user,
-    },
-  );
-  return (
-    <Box>
-      {!loading ? (
-        <Code as="pre">
-          {data ? JSON.stringify(data.viewer, undefined, 2) : "null"}
-        </Code>
-      ) : (
-        <Skeleton h={20} />
-      )}
-    </Box>
   );
 };
 

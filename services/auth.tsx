@@ -3,79 +3,83 @@ import { gql } from "@apollo/client";
 import { ApolloClient, useApolloClient } from "services/apollo";
 import { useFirebaseLogin, useFirebaseLogout } from "services/firebase";
 
-import { CreateUserInput, UpdateUserInput } from "__generated__/globalTypes";
-import {
-  AuthGetViewer,
-  AuthGetViewer_viewer,
-} from "./__generated__/AuthGetViewer";
+import { AuthViewerQuery, AuthViewerQuery_viewer } from "schema";
+import { CreateUserInput, UpdateUserInput } from "schema";
+
+const AUTH_VIEWER_QUERY = gql`
+  query AuthViewerQuery {
+    viewer {
+      id
+    }
+  }
+`;
 
 const getViewer = async (
   client: ApolloClient,
-): Promise<AuthGetViewer_viewer | null> => {
-  const { data } = await client.query<AuthGetViewer>({
-    query: gql`
-      query AuthGetViewer {
-        viewer {
-          id
-        }
-      }
-    `,
+): Promise<AuthViewerQuery_viewer | null> => {
+  const { data } = await client.query<AuthViewerQuery>({
+    query: AUTH_VIEWER_QUERY,
+    fetchPolicy: "network-only",
   });
   return data.viewer;
 };
 
-const createUser = async (
+const CREATE_USER_ACCOUNT_UTATION = gql`
+  mutation CreateUserAccountMutation($input: CreateUserInput!) {
+    createUser(input: $input) {
+      user {
+        id
+        slug
+        firstName
+        lastName
+        about
+        imageUrl
+        email
+        phone
+        isAdmin
+        isEmailVerified
+        isPhoneVerified
+      }
+    }
+  }
+`;
+
+const createUserAccount = async (
   client: ApolloClient,
   input: CreateUserInput,
 ): Promise<void> => {
   await client.mutate({
-    mutation: gql`
-      mutation AuthCreateUser($input: CreateUserInput!) {
-        createUser(input: $input) {
-          user {
-            id
-            slug
-            firstName
-            lastName
-            about
-            imageUrl
-            email
-            phone
-            isAdmin
-            isEmailVerified
-            isPhoneVerified
-          }
-        }
-      }
-    `,
+    mutation: CREATE_USER_ACCOUNT_UTATION,
     variables: { input },
   });
 };
 
-const updateUser = async (
+const UPDATE_USER_ACCOUNT_MUTATION = gql`
+  mutation UpdateUserAccountMutation($input: UpdateUserInput!) {
+    updateUser(input: $input) {
+      user {
+        id
+        slug
+        firstName
+        lastName
+        about
+        imageUrl
+        email
+        phone
+        isAdmin
+        isEmailVerified
+        isPhoneVerified
+      }
+    }
+  }
+`;
+
+const updateUserAccount = async (
   client: ApolloClient,
   input: UpdateUserInput,
 ): Promise<void> => {
   await client.mutate({
-    mutation: gql`
-      mutation AuthUpdateUser($input: UpdateUserInput!) {
-        updateUser(input: $input) {
-          user {
-            id
-            slug
-            firstName
-            lastName
-            about
-            imageUrl
-            email
-            phone
-            isAdmin
-            isEmailVerified
-            isPhoneVerified
-          }
-        }
-      }
-    `,
+    mutation: UPDATE_USER_ACCOUNT_MUTATION,
     variables: { input },
   });
 };
@@ -89,6 +93,8 @@ export const useLogin = (): (() => Promise<void>) | null => {
         if (!additionalUserInfo) {
           throw new Error("Missing profile info from provider.");
         }
+
+        await new Promise(resolve => setTimeout(resolve, 250));
         const viewer = await getViewer(client);
 
         const {
@@ -106,9 +112,9 @@ export const useLogin = (): (() => Promise<void>) | null => {
           imageUrl,
         };
         if (viewer) {
-          updateUser(client, params);
+          updateUserAccount(client, params);
         } else {
-          createUser(client, params);
+          createUserAccount(client, params);
         }
       }
     : null;
