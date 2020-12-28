@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { useTypedController } from "@hookform/strictly-typed";
 import { validate as isValidEmail } from "email-validator";
 import { isValidNumber as isValidPhone } from "libphonenumber-js";
+import { validateURL, validateNumber, handleNumberInput } from "utils/input";
 
 import {
   HiLink,
@@ -158,16 +159,6 @@ const SHELTER_FORM_QUERY = gql`
   }
 `;
 
-const validateURL = (value: any): boolean | string => {
-  if (!value) return true;
-  try {
-    new URL(value);
-    return true;
-  } catch (error) {
-    return "Invalid URL.";
-  }
-};
-
 export interface ShelterFormProps extends BoxProps {
   readonly shelterId?: string;
   readonly isReadOnly?: boolean;
@@ -182,8 +173,10 @@ export interface ShelterFormProps extends BoxProps {
 }
 
 interface ShelterFormValues
-  extends Omit<CreateShelterInput, "location" | "food"> {
-  location: number[];
+  extends Omit<CreateShelterInput, "location" | "spots" | "beds" | "food"> {
+  location: (number | "")[];
+  spots: number | "";
+  beds: number | "";
   food: CreateShelterInput["food"] | null;
 }
 
@@ -240,27 +233,32 @@ export const ShelterForm: FC<ShelterFormProps> = ({
     handleSubmit,
   } = useForm<ShelterFormValues>({ mode: "all" });
 
-  const onSubmit = handleSubmit(async ({ imageUrl, food, ...otherFields }) => {
-    const params = {
-      imageUrl: imageUrl || null,
-      food: food!,
-      ...otherFields,
-    };
-    if (shelterId) {
-      await updateShelter({
-        variables: {
-          input: { shelterId, ...params },
-        },
-      });
-    } else {
-      await createShelter({
-        variables: {
-          input: { ...params },
-        },
-      });
-    }
-    closeModal();
-  });
+  const onSubmit = handleSubmit(
+    async ({ imageUrl, location, spots, beds, food, ...otherFields }) => {
+      const params = {
+        imageUrl: imageUrl || null,
+        location: location as number[],
+        spots: spots as number,
+        beds: beds as number,
+        food: food!,
+        ...otherFields,
+      };
+      if (shelterId) {
+        await updateShelter({
+          variables: {
+            input: { shelterId, ...params },
+          },
+        });
+      } else {
+        await createShelter({
+          variables: {
+            input: { ...params },
+          },
+        });
+      }
+      closeModal();
+    },
+  );
 
   const isNew = !shelterId;
   const Controller = useTypedController<ShelterFormValues>({ control });
@@ -499,118 +497,122 @@ export const ShelterForm: FC<ShelterFormProps> = ({
         </FormControl>
         <FormControl isInvalid={!!formErrors.location}>
           <FormLabel>Location</FormLabel>
-          <HStack p={3} borderRadius="md" bg="gray.50">
+          <HStack align="flex-start" p={3} borderRadius="md" bg="gray.50">
             <FormControl isInvalid={!!(formErrors.location ?? [])[1]}>
               <FormLabel fontSize="sm" mb={0}>
                 Latitude
               </FormLabel>
-              <NumberInput
-                pattern="-?[0-9]*(.[0-9]+)?"
-                defaultValue={defaults?.location[1]}
-                isReadOnly={isReadOnly}
-                size="sm"
-              >
-                <NumberInputField
-                  ref={register({
-                    required: true,
-                    valueAsNumber: true,
-                  })}
-                  name="location[1]"
-                  type="number"
-                  placeholder="43.649265"
-                  required
-                  aria-required
-                />
-              </NumberInput>
+              <Controller
+                name={["location", 1]}
+                rules={{ required: true, validate: validateNumber }}
+                defaultValue={defaults?.location[0] ?? ""}
+                render={({ onChange, ...otherProps }) => (
+                  <NumberInput
+                    pattern="-?[0-9]*(.[0-9]+)?"
+                    precision={6}
+                    defaultValue={defaults?.location[1]}
+                    onChange={handleNumberInput(onChange)}
+                    isReadOnly={isReadOnly}
+                    allowMouseWheel={false}
+                    size="sm"
+                    {...otherProps}
+                  >
+                    <NumberInputField type="number" placeholder="43.649265" />
+                  </NumberInput>
+                )}
+              />
               <FormErrorMessage errors={formErrors} name="location[1]" />
             </FormControl>
             <FormControl isInvalid={!!(formErrors.location ?? [])[0]}>
               <FormLabel fontSize="sm" mb={0}>
                 Longitude
               </FormLabel>
-              <NumberInput
-                pattern="-?[0-9]*(.[0-9]+)?"
-                defaultValue={defaults?.location[0]}
-                isReadOnly={isReadOnly}
-                size="sm"
-              >
-                <NumberInputField
-                  ref={register({
-                    required: true,
-                    valueAsNumber: true,
-                  })}
-                  name="location[0]"
-                  type="number"
-                  placeholder="-79.39942"
-                  required
-                  aria-required
-                />
-              </NumberInput>
+              <Controller
+                name={["location", 0]}
+                rules={{ required: true, validate: validateNumber }}
+                defaultValue={defaults?.location[1] ?? ""}
+                render={({ onChange, ...otherProps }) => (
+                  <NumberInput
+                    pattern="-?[0-9]*(.[0-9]+)?"
+                    precision={6}
+                    defaultValue={defaults?.location[0]}
+                    onChange={handleNumberInput(onChange)}
+                    isReadOnly={isReadOnly}
+                    size="sm"
+                    allowMouseWheel={false}
+                    {...otherProps}
+                  >
+                    <NumberInputField type="number" placeholder="-79.399421" />
+                  </NumberInput>
+                )}
+              />
               <FormErrorMessage errors={formErrors} name="location[0]" />
             </FormControl>
           </HStack>
         </FormControl>
         <FormControl>
           <FormLabel>Capacity</FormLabel>
-          <HStack p={3} borderRadius="md" bg="gray.50">
+          <HStack align="flex-start" p={3} borderRadius="md" bg="gray.50">
             <FormControl isInvalid={!!formErrors.spots}>
               <FormLabel fontSize="sm" mb={0}>
                 Spots
               </FormLabel>
-              <NumberInput
-                inputMode="numeric"
-                min={0}
-                defaultValue={defaults?.spots}
-                isReadOnly={isReadOnly}
-                size="sm"
-              >
-                <NumberInputField
-                  ref={register({
-                    required: true,
-                    valueAsNumber: true,
-                    min: { value: 0, message: "Must be non-negative." },
-                  })}
-                  name="spots"
-                  type="number"
-                  placeholder="50"
-                  required
-                  aria-required
-                />
-                <NumberInputStepper>
-                  <NumberIncrementStepper />
-                  <NumberDecrementStepper />
-                </NumberInputStepper>
-              </NumberInput>
+              <Controller
+                name="spots"
+                rules={{
+                  required: true,
+                  validate: validateNumber,
+                  min: { value: 0, message: "Must be non-negative." },
+                }}
+                defaultValue={defaults?.spots ?? ""}
+                render={({ onChange, ...otherProps }) => (
+                  <NumberInput
+                    inputMode="numeric"
+                    min={0}
+                    onChange={handleNumberInput(onChange)}
+                    isReadOnly={isReadOnly}
+                    size="sm"
+                    {...otherProps}
+                  >
+                    <NumberInputField type="number" placeholder="50" />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                    </NumberInputStepper>
+                  </NumberInput>
+                )}
+              />
               <FormErrorMessage errors={formErrors} name="spots" />
             </FormControl>
             <FormControl isInvalid={!!formErrors.beds}>
               <FormLabel fontSize="sm" mb={0}>
                 Beds
               </FormLabel>
-              <NumberInput
-                inputMode="numeric"
-                min={0}
-                defaultValue={defaults?.beds}
-                isReadOnly={isReadOnly}
-                size="sm"
-              >
-                <NumberInputField
-                  ref={register({
-                    required: true,
-                    valueAsNumber: true,
-                    min: { value: 0, message: "Must be non-negative." },
-                  })}
-                  name="beds"
-                  type="number"
-                  placeholder="25"
-                  required
-                  aria-required
-                />
-                <NumberInputStepper>
-                  <NumberIncrementStepper />
-                  <NumberDecrementStepper />
-                </NumberInputStepper>
-              </NumberInput>
+              <Controller
+                name="beds"
+                rules={{
+                  required: true,
+                  validate: validateNumber,
+                  min: { value: 0, message: "Must be non-negative." },
+                }}
+                defaultValue={defaults?.beds ?? ""}
+                render={({ onChange, ...otherProps }) => (
+                  <NumberInput
+                    inputMode="numeric"
+                    min={0}
+                    onChange={handleNumberInput(onChange)}
+                    isReadOnly={isReadOnly}
+                    size="sm"
+                    {...otherProps}
+                  >
+                    <NumberInputField type="number" placeholder="25" />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                    </NumberInputStepper>
+                  </NumberInput>
+                )}
+              />
               <FormErrorMessage errors={formErrors} name="beds" />
             </FormControl>
           </HStack>
