@@ -62,8 +62,11 @@ export const useResetApolloStoreOnUserLoad = (): void => {
   const client = useApolloClient();
   const user = useFirebaseUser();
   useEffect(() => {
-    if (user && !loaded) {
-      client.resetStore();
+    if (user === undefined) return;
+    if (!loaded) {
+      if (user) {
+        client.resetStore();
+      }
       setLoaded(true);
     }
   }, [user]);

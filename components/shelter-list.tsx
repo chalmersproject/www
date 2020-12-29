@@ -6,6 +6,8 @@ import { Box, BoxProps, VStack } from "@chakra-ui/react";
 import { Button } from "@chakra-ui/react";
 import { Skeleton } from "@chakra-ui/react";
 import { Text, Heading } from "@chakra-ui/react";
+import { Fade } from "@chakra-ui/react";
+import { useColorModeValue } from "@chakra-ui/react";
 
 import { ShelterForm } from "components/shelter-form";
 import { ShelterCard, SHELTER_CARD_FRAGMENTS } from "components/shelter-card";
@@ -57,8 +59,15 @@ export const ShelterList: FC<ShelterListProps> = ({
             ))}
           </VStack>
         ) : (
-          <Box p={4} borderRadius="md" bg="gray.100">
-            <Text fontWeight="medium" color="gray.500">
+          <Box
+            p={4}
+            borderRadius="md"
+            bg={useColorModeValue("gray.100", "gray.600")}
+          >
+            <Text
+              fontWeight="medium"
+              color={useColorModeValue("gray.500", "gray.300")}
+            >
               No shelters registered.
             </Text>
           </Box>
@@ -68,7 +77,7 @@ export const ShelterList: FC<ShelterListProps> = ({
           <Skeleton key={index} h={32} borderRadius="md" />
         ))
       )}
-      {viewer?.isAdmin && (
+      <Fade in={viewer?.isAdmin}>
         <ShelterForm onCreate={() => refetch()}>
           {({ onOpen }) => (
             <Button onClick={onOpen} colorScheme="pink" mt={3}>
@@ -76,7 +85,7 @@ export const ShelterList: FC<ShelterListProps> = ({
             </Button>
           )}
         </ShelterForm>
-      )}
+      </Fade>
     </VStack>
   );
 };

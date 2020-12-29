@@ -1,12 +1,12 @@
 import React, { FC, useMemo } from "react";
 import { gql } from "@apollo/client";
 
-import { Box, BoxProps, Flex, HStack, VStack } from "@chakra-ui/react";
-import { AspectRatio } from "@chakra-ui/react";
+import { Box, BoxProps, HStack, VStack } from "@chakra-ui/react";
 import { Wrap, WrapItem } from "@chakra-ui/react";
 import { Tag } from "@chakra-ui/react";
 import { Text } from "@chakra-ui/react";
 import { Image } from "@chakra-ui/react";
+import { useColorModeValue } from "@chakra-ui/react";
 
 import { ShelterForm, ShelterFormProps } from "components/shelter-form";
 
@@ -47,6 +47,12 @@ export const ShelterCard: FC<ShelterCardProps> = ({
   const sortedTags = useMemo(() => (tags ? [...tags].sort() : undefined), [
     tags,
   ]);
+
+  const cardBg = useColorModeValue("gray.50", "gray.700");
+  const cardHoverBg = useColorModeValue("gray.100", "gray.600");
+  const nameColor = useColorModeValue("gray.900", "gray.50");
+  const aboutColor = useColorModeValue("gray.500", "gray.400");
+
   return (
     <ShelterForm
       shelterId={id}
@@ -59,19 +65,19 @@ export const ShelterCard: FC<ShelterCardProps> = ({
           borderRadius="md"
           cursor="pointer"
           p={4}
-          bg="gray.50"
+          bg={cardBg}
           transition="background-color"
           transitionTimingFunction="ease-in-out"
           transitionDuration="normal"
-          _hover={{ bg: "gray.100" }}
+          _hover={{ bg: cardHoverBg }}
           {...otherProps}
         >
           <VStack align="flex-start" flex={1}>
             <Box>
-              <Text fontSize="lg" fontWeight="medium" color="gray.900">
+              <Text fontSize="lg" fontWeight="medium" color={nameColor}>
                 {name}
               </Text>
-              <Text noOfLines={3} fontSize="base" color="gray.500">
+              <Text noOfLines={3} fontSize="base" color={aboutColor}>
                 {about}
               </Text>
             </Box>

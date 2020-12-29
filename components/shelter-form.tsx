@@ -22,8 +22,6 @@ import {
   HStack,
   VStack,
   SimpleGrid,
-  Center,
-  Tag,
   Spacer,
 } from "@chakra-ui/react";
 import { Text } from "@chakra-ui/react";
@@ -32,6 +30,7 @@ import { Button } from "@chakra-ui/react";
 import { Image } from "@chakra-ui/react";
 import { useBreakpointValue } from "@chakra-ui/react";
 import { useDisclosure, UseDisclosureReturn } from "@chakra-ui/react";
+import { useColorModeValue } from "@chakra-ui/react";
 
 import { FormControl, FormLabel } from "@chakra-ui/react";
 import { Textarea } from "@chakra-ui/react";
@@ -272,9 +271,12 @@ export const ShelterForm: FC<ShelterFormProps> = ({
     },
   );
 
+  const Controller = useTypedController<ShelterFormValues>({ control });
+
   const isNew = !shelterId;
   const imageUrl = watch("imageUrl", defaults?.imageUrl);
-  const Controller = useTypedController<ShelterFormValues>({ control });
+  const sectionBg = useColorModeValue("gray.100", "gray.800");
+
   const renderForm = () => {
     if (queryLoading) {
       return [...Array(5)].map((_, index) => <Skeleton key={index} h={16} />);
@@ -401,7 +403,13 @@ export const ShelterForm: FC<ShelterFormProps> = ({
           </InputGroup>
           <FormErrorMessage errors={formErrors} name="imageUrl" />
           {imageUrl && (
-            <HStack align="flex-start" mt={3}>
+            <HStack
+              align="flex-start"
+              p={3}
+              borderRadius="md"
+              bg={sectionBg}
+              mt={2}
+            >
               <Text fontSize="sm" fontWeight="medium">
                 Preview:
               </Text>
@@ -418,7 +426,7 @@ export const ShelterForm: FC<ShelterFormProps> = ({
         </FormControl>
         <FormControl isInvalid={!!formErrors.address}>
           <FormLabel>Address</FormLabel>
-          <VStack spacing={2} p={3} borderRadius="md" bg="gray.50">
+          <VStack spacing={2} p={3} borderRadius="md" bg={sectionBg}>
             <FormControl isInvalid={!!formErrors.address?.line1}>
               <FormLabel fontSize="sm" mb={0}>
                 Line 1
@@ -525,7 +533,7 @@ export const ShelterForm: FC<ShelterFormProps> = ({
         </FormControl>
         <FormControl isInvalid={!!formErrors.location}>
           <FormLabel>Location</FormLabel>
-          <HStack align="flex-start" p={3} borderRadius="md" bg="gray.50">
+          <HStack align="flex-start" p={3} borderRadius="md" bg={sectionBg}>
             <FormControl isInvalid={!!(formErrors.location ?? [])[1]}>
               <FormLabel fontSize="sm" mb={0}>
                 Latitude
@@ -533,19 +541,21 @@ export const ShelterForm: FC<ShelterFormProps> = ({
               <Controller
                 name={["location", 1]}
                 rules={{ required: true, validate: validateNumber }}
-                defaultValue={defaults?.location[0] ?? ""}
+                defaultValue={defaults?.location[1] ?? ""}
                 render={({ onChange, ...otherProps }) => (
                   <NumberInput
                     pattern="-?[0-9]*(.[0-9]+)?"
-                    precision={6}
-                    defaultValue={defaults?.location[1]}
                     onChange={handleNumberInput(onChange)}
                     isReadOnly={isReadOnly}
                     allowMouseWheel={false}
                     size="sm"
                     {...otherProps}
                   >
-                    <NumberInputField type="number" placeholder="43.649265" />
+                    <NumberInputField
+                      type="number"
+                      step="any"
+                      placeholder="43.649265"
+                    />
                   </NumberInput>
                 )}
               />
@@ -558,19 +568,21 @@ export const ShelterForm: FC<ShelterFormProps> = ({
               <Controller
                 name={["location", 0]}
                 rules={{ required: true, validate: validateNumber }}
-                defaultValue={defaults?.location[1] ?? ""}
+                defaultValue={defaults?.location[0] ?? ""}
                 render={({ onChange, ...otherProps }) => (
                   <NumberInput
                     pattern="-?[0-9]*(.[0-9]+)?"
-                    precision={6}
-                    defaultValue={defaults?.location[0]}
                     onChange={handleNumberInput(onChange)}
                     isReadOnly={isReadOnly}
                     size="sm"
                     allowMouseWheel={false}
                     {...otherProps}
                   >
-                    <NumberInputField type="number" placeholder="-79.399421" />
+                    <NumberInputField
+                      type="number"
+                      step="any"
+                      placeholder="-79.399421"
+                    />
                   </NumberInput>
                 )}
               />
@@ -580,7 +592,7 @@ export const ShelterForm: FC<ShelterFormProps> = ({
         </FormControl>
         <FormControl>
           <FormLabel>Capacity</FormLabel>
-          <HStack align="flex-start" p={3} borderRadius="md" bg="gray.50">
+          <HStack align="flex-start" p={3} borderRadius="md" bg={sectionBg}>
             <FormControl isInvalid={!!formErrors.spots}>
               <FormLabel fontSize="sm" mb={0}>
                 Spots
@@ -653,7 +665,7 @@ export const ShelterForm: FC<ShelterFormProps> = ({
             defaultValue={defaults?.food ?? null}
             render={({ value, onChange }) => (
               <RadioGroup value={value ?? undefined} onChange={onChange}>
-                <HStack spacing={4} p={3} borderRadius="md" bg="gray.50">
+                <HStack spacing={4} p={3} borderRadius="md" bg={sectionBg}>
                   <Radio value={ShelterFood.MEALS} isReadOnly={isReadOnly}>
                     Meals
                   </Radio>
@@ -681,7 +693,7 @@ export const ShelterForm: FC<ShelterFormProps> = ({
                   columns={numColumns}
                   p={3}
                   borderRadius="md"
-                  bg="gray.50"
+                  bg={sectionBg}
                 >
                   <Checkbox value={ShelterTag.ADULT} isReadOnly={isReadOnly}>
                     Accepts Adults

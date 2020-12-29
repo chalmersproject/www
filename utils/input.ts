@@ -24,6 +24,7 @@ export const handleNumberInput = (
   valueAsString,
   valueAsNumber,
 ) => {
+  console.log({ valueAsNumber, valueAsString });
   if (valueAsString === "") {
     onChange("");
   } else {

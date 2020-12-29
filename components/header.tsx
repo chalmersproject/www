@@ -1,10 +1,16 @@
 import React, { FC } from "react";
 import { gql, useQuery } from "@apollo/client";
 
-import { BoxProps, Button, HStack, Spacer } from "@chakra-ui/react";
+import { HiLogout, HiUser } from "react-icons/hi";
+import { HiSun, HiMoon } from "react-icons/hi";
+
+import { BoxProps, HStack, Icon, Spacer } from "@chakra-ui/react";
+import { Button } from "@chakra-ui/react";
 import { Avatar } from "@chakra-ui/react";
+import { Text } from "@chakra-ui/react";
 import { Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
-import type { MenuProps } from "@chakra-ui/react";
+import { MenuProps } from "@chakra-ui/react";
+import { useColorMode } from "@chakra-ui/react";
 
 import { useLogin, useLogout } from "services/auth";
 
@@ -28,9 +34,13 @@ const HeaderMenu: FC<HeaderMenuProps> = ({
   loading,
   ...otherProps
 }) => {
+  const { name, imageUrl } = user ?? {};
   const login = useLogin();
   const logout = useLogout();
-  const { name, imageUrl } = user ?? {};
+
+  const { colorMode, toggleColorMode } = useColorMode();
+  const isDarkMode = colorMode === "dark";
+
   return (
     <Menu {...otherProps}>
       <MenuButton
@@ -39,7 +49,8 @@ const HeaderMenu: FC<HeaderMenuProps> = ({
         p={1}
         h="inherit"
         borderRadius="full"
-        bg="pink.200"
+        bg="pink.300"
+        _hover={{ bg: "pink.400" }}
         _active={{ bg: "pink.400" }}
       >
         <Avatar name={name} src={imageUrl ?? undefined} size="sm" />
@@ -47,17 +58,35 @@ const HeaderMenu: FC<HeaderMenuProps> = ({
       <MenuList>
         {user ? (
           <>
-            <MenuItem onClick={logout!} isDisabled={!logout}>
-              Logout
+            <MenuItem
+              onClick={logout!}
+              isDisabled={!logout}
+              fontWeight="medium"
+            >
+              <HStack>
+                <Icon as={HiLogout} />
+                <Text fontWeight="medium">Logout</Text>
+              </HStack>
             </MenuItem>
           </>
         ) : (
           <>
             <MenuItem onClick={login!} isDisabled={!login}>
-              Login
+              <HStack>
+                <Icon as={HiUser} />
+                <Text fontWeight="medium">Login</Text>
+              </HStack>
             </MenuItem>
           </>
         )}
+        <MenuItem onClick={toggleColorMode} fontWeight="medium">
+          <HStack>
+            <Icon as={isDarkMode ? HiSun : HiMoon} />
+            <Text fontWeight="medium">
+              {isDarkMode ? "Light" : "Dark"} Mode
+            </Text>
+          </HStack>
+        </MenuItem>
       </MenuList>
     </Menu>
   );
