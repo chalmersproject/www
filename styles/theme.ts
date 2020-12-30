@@ -36,6 +36,12 @@ const THEME = extendTheme({
     2.5: "0.625rem",
     3.5: "0.875rem",
   },
+  sizes: {
+    0.5: "0.125rem",
+    1.5: "0.375rem",
+    2.5: "0.625rem",
+    3.5: "0.875rem",
+  },
   styles: {
     global: {
       html: {

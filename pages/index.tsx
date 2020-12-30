@@ -6,10 +6,10 @@ import { Container } from "@chakra-ui/react";
 import { Layout } from "components/layout";
 import { ShelterList, SHELTER_LIST_FRAGMENTS } from "components/shelter-list";
 
-import { HomeQuery } from "schema";
+import { AdminQuery } from "schema";
 
-export const HOME_QUERY = gql`
-  query HomeQuery {
+export const ADMIN_QUERY = gql`
+  query AdminQuery {
     viewer {
       ...ShelterList_viewer
     }
@@ -21,16 +21,18 @@ export const HOME_QUERY = gql`
   ${SHELTER_LIST_FRAGMENTS}
 `;
 
-const Home: FC = () => {
-  const { data, loading, refetch } = useQuery<HomeQuery>(HOME_QUERY);
+const Admin: FC = () => {
+  const { data, loading: isLoading, refetch } = useQuery<AdminQuery>(
+    ADMIN_QUERY,
+  );
   const { viewer, shelters } = data ?? {};
   return (
-    <Layout>
+    <Layout title="Admin">
       <Container my={4}>
-        <ShelterList {...{ viewer, shelters, loading, refetch }} />
+        <ShelterList {...{ viewer, shelters, refetch, isLoading }} />
       </Container>
     </Layout>
   );
 };
 
-export default Home;
+export default Admin;

@@ -5,7 +5,7 @@
       "pages": ["./pages"],
       "utils": ["./utils"],
       "assets": ["./assets"],
-      "schema": ["./schema"],
+      "schema": ["./schema.ts"],
       "styles": ["./styles"],
       "services": ["./services"],
       "components": ["./components"]

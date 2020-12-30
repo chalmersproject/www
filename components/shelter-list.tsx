@@ -32,14 +32,14 @@ export interface ShelterListProps extends BoxProps {
   readonly viewer: ShelterList_viewer | null | undefined;
   readonly shelters: ShelterList_shelter[] | undefined;
   readonly refetch: () => Promise<any>;
-  readonly loading: boolean;
+  readonly isLoading: boolean;
 }
 
 export const ShelterList: FC<ShelterListProps> = ({
   viewer,
   shelters,
   refetch,
-  loading,
+  isLoading,
   ...otherProps
 }) => {
   return (
@@ -47,7 +47,7 @@ export const ShelterList: FC<ShelterListProps> = ({
       <Heading size="lg" fontSize="2xl" fontWeight="semibold" mb={1}>
         Shelters
       </Heading>
-      {!loading ? (
+      {!isLoading ? (
         !isEmpty(shelters) ? (
           <VStack align="stretch" spacing={3}>
             {shelters?.map(shelter => (

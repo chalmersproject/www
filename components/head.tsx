@@ -6,7 +6,7 @@ export interface TitleProps {
 }
 
 export const Title: FC<TitleProps> = ({ children }) => {
-  const title = children ? `${children} | Joya` : "Joya";
+  const title = children ? `${children} | Chalmers` : "Chalmers";
   return (
     <Head>
       <title>{title}</title>

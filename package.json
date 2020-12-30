@@ -5,8 +5,8 @@
   "scripts": {
     "start": "next dev",
     "build": "next build && next export -o dist",
-    "schema-fetch": "apollo client:download-schema --endpoint http://127.0.0.1:8080/graphql",
-    "schema-generate": "apollo client:codegen --target typescript --outputFlat schema.ts",
+    "apollo-fetch": "apollo client:download-schema --endpoint http://127.0.0.1:8080/graphql",
+    "apollo-generate": "apollo client:codegen --target typescript --outputFlat schema.ts",
     "format": "prettier --write .",
     "lint": "eslint .",
     "release": "standard-version"

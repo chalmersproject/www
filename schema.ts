@@ -40,6 +40,18 @@ export interface CreateShelterMutation_createShelter_shelter_address {
   postcode: string;
 }
 
+export interface CreateShelterMutation_createShelter_shelter_capacity {
+  __typename: "ShelterSpace";
+  spots: number;
+  beds: number;
+}
+
+export interface CreateShelterMutation_createShelter_shelter_occupancy {
+  __typename: "ShelterSpace";
+  spots: number;
+  beds: number;
+}
+
 export interface CreateShelterMutation_createShelter_shelter {
   __typename: "Shelter";
   id: string;
@@ -52,8 +64,8 @@ export interface CreateShelterMutation_createShelter_shelter {
   websiteUrl: string | null;
   address: CreateShelterMutation_createShelter_shelter_address;
   location: any;
-  spots: number;
-  beds: number;
+  capacity: CreateShelterMutation_createShelter_shelter_capacity;
+  occupancy: CreateShelterMutation_createShelter_shelter_occupancy;
   food: ShelterFood;
   tags: ShelterTag[];
 }
@@ -93,6 +105,18 @@ export interface UpdateShelterMutation_updateShelter_shelter_address {
   postcode: string;
 }
 
+export interface UpdateShelterMutation_updateShelter_shelter_capacity {
+  __typename: "ShelterSpace";
+  spots: number;
+  beds: number;
+}
+
+export interface UpdateShelterMutation_updateShelter_shelter_occupancy {
+  __typename: "ShelterSpace";
+  spots: number;
+  beds: number;
+}
+
 export interface UpdateShelterMutation_updateShelter_shelter {
   __typename: "Shelter";
   id: string;
@@ -105,8 +129,8 @@ export interface UpdateShelterMutation_updateShelter_shelter {
   websiteUrl: string | null;
   address: UpdateShelterMutation_updateShelter_shelter_address;
   location: any;
-  spots: number;
-  beds: number;
+  capacity: UpdateShelterMutation_updateShelter_shelter_capacity;
+  occupancy: UpdateShelterMutation_updateShelter_shelter_occupancy;
   food: ShelterFood;
   tags: ShelterTag[];
 }
@@ -166,6 +190,18 @@ export interface ShelterFormQuery_shelter_address {
   postcode: string;
 }
 
+export interface ShelterFormQuery_shelter_capacity {
+  __typename: "ShelterSpace";
+  spots: number;
+  beds: number;
+}
+
+export interface ShelterFormQuery_shelter_occupancy {
+  __typename: "ShelterSpace";
+  spots: number;
+  beds: number;
+}
+
 export interface ShelterFormQuery_shelter {
   __typename: "Shelter";
   id: string;
@@ -177,8 +213,8 @@ export interface ShelterFormQuery_shelter {
   websiteUrl: string | null;
   address: ShelterFormQuery_shelter_address;
   location: any;
-  spots: number;
-  beds: number;
+  capacity: ShelterFormQuery_shelter_capacity;
+  occupancy: ShelterFormQuery_shelter_occupancy;
   food: ShelterFood;
   tags: ShelterTag[];
 }
@@ -200,15 +236,15 @@ export interface ShelterFormQueryVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: HomeQuery
+// GraphQL query operation: AdminQuery
 // ====================================================
 
-export interface HomeQuery_viewer {
+export interface AdminQuery_viewer {
   __typename: "User";
   isAdmin: boolean;
 }
 
-export interface HomeQuery_shelters {
+export interface AdminQuery_shelters {
   __typename: "Shelter";
   id: string;
   name: string;
@@ -218,15 +254,15 @@ export interface HomeQuery_shelters {
   tags: ShelterTag[];
 }
 
-export interface HomeQuery {
+export interface AdminQuery {
   /**
    * Get the currently authenticated `User`.
    */
-  viewer: HomeQuery_viewer | null;
+  viewer: AdminQuery_viewer | null;
   /**
    * List all registered `Shelter`s.
    */
-  shelters: HomeQuery_shelters[];
+  shelters: AdminQuery_shelters[];
 }
 
 /* tslint:disable */
@@ -454,8 +490,7 @@ export interface CreateShelterInput {
   websiteUrl?: string | null;
   address: AddressInput;
   location: any;
-  spots: number;
-  beds: number;
+  capacity: ShelterSpaceInput;
   food: ShelterFood;
   tags: ShelterTag[];
 }
@@ -471,6 +506,11 @@ export interface DeleteShelterInput {
   shelterId: string;
 }
 
+export interface ShelterSpaceInput {
+  spots: number;
+  beds: number;
+}
+
 export interface UpdateShelterInput {
   shelterId: string;
   name?: string | null;
@@ -481,8 +521,7 @@ export interface UpdateShelterInput {
   websiteUrl?: string | null;
   address?: AddressInput | null;
   location?: any | null;
-  spots?: number | null;
-  beds?: number | null;
+  capacity?: ShelterSpaceInput | null;
   food?: ShelterFood | null;
   tags?: ShelterTag[] | null;
 }

@@ -16,20 +16,15 @@ import {
   HiPhotograph,
 } from "react-icons/hi";
 
-import {
-  Box,
-  BoxProps,
-  HStack,
-  VStack,
-  SimpleGrid,
-  Spacer,
-} from "@chakra-ui/react";
+import { Box, HStack, VStack, SimpleGrid, Spacer } from "@chakra-ui/react";
+import { BoxProps } from "@chakra-ui/react";
 import { Text } from "@chakra-ui/react";
 import { Skeleton } from "@chakra-ui/react";
 import { Button } from "@chakra-ui/react";
 import { Image } from "@chakra-ui/react";
 import { useBreakpointValue } from "@chakra-ui/react";
 import { useDisclosure, UseDisclosureReturn } from "@chakra-ui/react";
+import { useToast } from "@chakra-ui/react";
 import { useColorModeValue } from "@chakra-ui/react";
 
 import { FormControl, FormLabel } from "@chakra-ui/react";
@@ -65,13 +60,14 @@ import {
   CreateShelterInput,
   CreateShelterMutation,
   CreateShelterMutationVariables,
-  CreateShelterMutation_createShelter_shelter,
+  CreateShelterMutation_createShelter,
+  CreateShelterMutation_createShelter_shelter_capacity,
 } from "schema";
 
 import {
   UpdateShelterMutation,
   UpdateShelterMutationVariables,
-  UpdateShelterMutation_updateShelter_shelter,
+  UpdateShelterMutation_updateShelter,
 } from "schema";
 
 import { DeleteShelterMutation, DeleteShelterMutationVariables } from "schema";
@@ -97,8 +93,14 @@ const CREATE_SHELTER_MUTATION = gql`
           postcode
         }
         location
-        spots
-        beds
+        capacity {
+          spots
+          beds
+        }
+        occupancy {
+          spots
+          beds
+        }
         food
         tags
       }
@@ -127,8 +129,14 @@ const UPDATE_SHELTER_MUTATION = gql`
           postcode
         }
         location
-        spots
-        beds
+        capacity {
+          spots
+          beds
+        }
+        occupancy {
+          spots
+          beds
+        }
         food
         tags
       }
@@ -161,8 +169,14 @@ const SHELTER_FORM_QUERY = gql`
         postcode
       }
       location
-      spots
-      beds
+      capacity {
+        spots
+        beds
+      }
+      occupancy {
+        spots
+        beds
+      }
       food
       tags
     }
@@ -172,21 +186,19 @@ const SHELTER_FORM_QUERY = gql`
 export interface ShelterFormProps extends BoxProps {
   readonly shelterId?: string;
   readonly isReadOnly?: boolean;
-  readonly onCreate?: (
-    shelter: CreateShelterMutation_createShelter_shelter,
-  ) => void;
-  readonly onUpdate?: (
-    shelter: UpdateShelterMutation_updateShelter_shelter,
-  ) => void;
+  readonly onCreate?: (payload: CreateShelterMutation_createShelter) => void;
+  readonly onUpdate?: (payload: UpdateShelterMutation_updateShelter) => void;
   readonly onDelete?: () => void;
   readonly children: (disclosure: UseDisclosureReturn) => ReactNode;
 }
 
 interface ShelterFormValues
-  extends Omit<CreateShelterInput, "location" | "spots" | "beds" | "food"> {
+  extends Omit<CreateShelterInput, "location" | "spots" | "capacity" | "food"> {
   location: (number | "")[];
-  spots: number | "";
-  beds: number | "";
+  capacity: {
+    spots: number | "";
+    beds: number | "";
+  };
   food: CreateShelterInput["food"] | null;
 }
 
@@ -199,11 +211,12 @@ export const ShelterForm: FC<ShelterFormProps> = ({
   children,
   ...otherProps
 }) => {
+  const toast = useToast();
   const numColumns = useBreakpointValue({ base: 1, sm: 2 });
   const disclosure = useDisclosure();
   const { onClose: closeModal } = disclosure;
 
-  const { data, loading: queryLoading } = useQuery<
+  const { data, loading: isLoading } = useQuery<
     ShelterFormQuery,
     ShelterFormQueryVariables
   >(SHELTER_FORM_QUERY, {
@@ -214,21 +227,30 @@ export const ShelterForm: FC<ShelterFormProps> = ({
   });
   const defaults = data?.shelter;
 
-  const [createShelter, { loading: createLoading }] = useMutation<
+  const [createShelter, { loading: isCreating }] = useMutation<
     CreateShelterMutation,
     CreateShelterMutationVariables
   >(CREATE_SHELTER_MUTATION, {
-    onCompleted: ({ createShelter }) => call(onCreate, createShelter.shelter),
+    onCompleted: ({ createShelter }) => call(onCreate, createShelter),
   });
 
-  const [updateShelter, { loading: updateLoading }] = useMutation<
+  const [updateShelter, { loading: isUpdating }] = useMutation<
     UpdateShelterMutation,
     UpdateShelterMutationVariables
   >(UPDATE_SHELTER_MUTATION, {
-    onCompleted: ({ updateShelter }) => call(onUpdate, updateShelter.shelter),
+    onCompleted: ({ updateShelter }) => {
+      const { name } = updateShelter.shelter;
+      call(onUpdate, updateShelter);
+      toast({
+        title: "Shelter Updated",
+        description: `${name} has been successfully updated.`,
+        status: "success",
+        isClosable: true,
+      });
+    },
   });
 
-  const [deleteShelter, { loading: deleteLoading }] = useMutation<
+  const [deleteShelter, { loading: isDeleting }] = useMutation<
     DeleteShelterMutation,
     DeleteShelterMutationVariables
   >(DELETE_SHELTER_MUTATION, {
@@ -245,12 +267,11 @@ export const ShelterForm: FC<ShelterFormProps> = ({
   } = useForm<ShelterFormValues>({ mode: "all" });
 
   const onSubmit = handleSubmit(
-    async ({ imageUrl, location, spots, beds, food, ...otherFields }) => {
+    async ({ imageUrl, location, capacity, food, ...otherFields }) => {
       const params = {
         imageUrl: imageUrl || null,
         location: location as number[],
-        spots: spots as number,
-        beds: beds as number,
+        capacity: capacity as CreateShelterMutation_createShelter_shelter_capacity,
         food: food!,
         ...otherFields,
       };
@@ -278,7 +299,7 @@ export const ShelterForm: FC<ShelterFormProps> = ({
   const sectionBg = useColorModeValue("gray.100", "gray.800");
 
   const renderForm = () => {
-    if (queryLoading) {
+    if (isLoading) {
       return [...Array(5)].map((_, index) => <Skeleton key={index} h={16} />);
     }
     return (
@@ -593,18 +614,18 @@ export const ShelterForm: FC<ShelterFormProps> = ({
         <FormControl>
           <FormLabel>Capacity</FormLabel>
           <HStack align="flex-start" p={3} borderRadius="md" bg={sectionBg}>
-            <FormControl isInvalid={!!formErrors.spots}>
+            <FormControl isInvalid={!!formErrors.capacity?.spots}>
               <FormLabel fontSize="sm" mb={0}>
                 Spots
               </FormLabel>
               <Controller
-                name="spots"
+                name={["capacity", "spots"]}
                 rules={{
                   required: true,
                   validate: validateNumber,
                   min: { value: 0, message: "Must be non-negative." },
                 }}
-                defaultValue={defaults?.spots ?? ""}
+                defaultValue={defaults?.capacity.spots ?? ""}
                 render={({ onChange, ...otherProps }) => (
                   <NumberInput
                     inputMode="numeric"
@@ -622,20 +643,20 @@ export const ShelterForm: FC<ShelterFormProps> = ({
                   </NumberInput>
                 )}
               />
-              <FormErrorMessage errors={formErrors} name="spots" />
+              <FormErrorMessage errors={formErrors} name="capacity.spots" />
             </FormControl>
-            <FormControl isInvalid={!!formErrors.beds}>
+            <FormControl isInvalid={!!formErrors.capacity?.beds}>
               <FormLabel fontSize="sm" mb={0}>
                 Beds
               </FormLabel>
               <Controller
-                name="beds"
+                name={["capacity", "beds"]}
                 rules={{
                   required: true,
                   validate: validateNumber,
                   min: { value: 0, message: "Must be non-negative." },
                 }}
-                defaultValue={defaults?.beds ?? ""}
+                defaultValue={defaults?.capacity.beds ?? ""}
                 render={({ onChange, ...otherProps }) => (
                   <NumberInput
                     inputMode="numeric"
@@ -653,7 +674,7 @@ export const ShelterForm: FC<ShelterFormProps> = ({
                   </NumberInput>
                 )}
               />
-              <FormErrorMessage errors={formErrors} name="beds" />
+              <FormErrorMessage errors={formErrors} name="capacity.beds" />
             </FormControl>
           </HStack>
         </FormControl>
@@ -749,7 +770,7 @@ export const ShelterForm: FC<ShelterFormProps> = ({
                   <Button
                     type="submit"
                     colorScheme="pink"
-                    isLoading={createLoading || updateLoading}
+                    isLoading={isCreating || isUpdating}
                     isDisabled={!isValid}
                   >
                     {isNew ? "Submit" : "Update"}
@@ -763,7 +784,7 @@ export const ShelterForm: FC<ShelterFormProps> = ({
                           },
                         });
                       }}
-                      isLoading={deleteLoading}
+                      isLoading={isDeleting}
                     >
                       Delete
                     </Button>

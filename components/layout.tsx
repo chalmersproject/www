@@ -11,8 +11,8 @@ export interface LayoutProps extends BoxProps {
 
 export const Layout: FC<LayoutProps> = ({ title, children, ...otherProps }) => (
   <>
-    {title && <Title>{title}</Title>}
-    <Box minH="screen" {...otherProps}>
+    <Title>{title}</Title>
+    <Box minH="100vh" {...otherProps}>
       <Header />
       <VStack as="main" align="stretch">
         {children}

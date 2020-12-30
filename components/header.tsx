@@ -12,7 +12,7 @@ import { Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
 import { MenuProps } from "@chakra-ui/react";
 import { useColorMode } from "@chakra-ui/react";
 
-import { useLogin, useLogout } from "services/auth";
+import { useLogin, useLogout } from "utils/auth";
 
 import { HeaderQuery } from "schema";
 import { HeaderMenu_viewer } from "schema";
@@ -26,15 +26,15 @@ const HEADER_MENU_FRAGMENTS = gql`
 
 interface HeaderMenuProps extends Partial<MenuProps> {
   viewer: HeaderMenu_viewer | null | undefined;
-  loading: boolean;
+  isLoading: boolean;
 }
 
 const HeaderMenu: FC<HeaderMenuProps> = ({
-  viewer: user,
-  loading,
+  viewer,
+  isLoading,
   ...otherProps
 }) => {
-  const { name, imageUrl } = user ?? {};
+  const { name, imageUrl } = viewer ?? {};
   const login = useLogin();
   const logout = useLogout();
 
@@ -45,9 +45,8 @@ const HeaderMenu: FC<HeaderMenuProps> = ({
     <Menu {...otherProps}>
       <MenuButton
         as={Button}
-        isDisabled={loading}
+        isDisabled={isLoading}
         p={1}
-        h="inherit"
         borderRadius="full"
         bg="pink.300"
         _hover={{ bg: "pink.400" }}
@@ -56,7 +55,7 @@ const HeaderMenu: FC<HeaderMenuProps> = ({
         <Avatar name={name} src={imageUrl ?? undefined} size="sm" />
       </MenuButton>
       <MenuList>
-        {user ? (
+        {viewer ? (
           <>
             <MenuItem
               onClick={logout!}
@@ -111,7 +110,7 @@ export const Header: FC<HeaderProps> = ({ ...otherProps }) => {
   return (
     <HStack p={4} {...otherProps}>
       <Spacer />
-      <HeaderMenu viewer={viewer} loading={loading} />
+      <HeaderMenu viewer={viewer} isLoading={loading} />
     </HStack>
   );
 };
