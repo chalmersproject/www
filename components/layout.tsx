@@ -1,22 +1,27 @@
 import React, { FC } from "react";
 
 import { Title } from "components/head";
-import { Header } from "components/header";
+import { Header, HeaderProps } from "components/header";
 
-import { Box, BoxProps, VStack } from "@chakra-ui/react";
+import { Flex, BoxProps, VStack } from "@chakra-ui/react";
 
-export interface LayoutProps extends BoxProps {
+export interface LayoutProps extends BoxProps, Pick<HeaderProps, "crumbs"> {
   title?: string;
 }
 
-export const Layout: FC<LayoutProps> = ({ title, children, ...otherProps }) => (
+export const Layout: FC<LayoutProps> = ({
+  title,
+  crumbs,
+  children,
+  ...otherProps
+}) => (
   <>
     <Title>{title}</Title>
-    <Box minH="100vh" {...otherProps}>
-      <Header />
-      <VStack as="main" align="stretch">
+    <Flex direction="column" minH="100vh">
+      <Header crumbs={crumbs} />
+      <VStack as="main" align="stretch" {...otherProps}>
         {children}
       </VStack>
-    </Box>
+    </Flex>
   </>
 );

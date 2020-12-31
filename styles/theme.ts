@@ -50,28 +50,14 @@ const THEME = extendTheme({
     },
   },
   components: {
+    Checkbox: {
+      defaultProps: {
+        colorScheme: "pink",
+      },
+    },
     FormLabel: {
       baseStyle: {
         mb: 1,
-      },
-    },
-    Textarea: {
-      variants: {
-        outline: (props: Record<string, any>) => {
-          const { focusBorderColor, theme } = props;
-          const color = focusBorderColor || mode("pink.500", "pink.300")(props);
-          return {
-            _focus: {
-              borderColor: getColor(theme, color),
-              boxShadow: `0 0 0 1px ${getColor(theme, color)}`,
-            },
-          };
-        },
-      },
-    },
-    Radio: {
-      defaultProps: {
-        colorScheme: "pink",
       },
     },
     Input: {
@@ -106,9 +92,23 @@ const THEME = extendTheme({
         },
       },
     },
-    Checkbox: {
+    Radio: {
       defaultProps: {
         colorScheme: "pink",
+      },
+    },
+    Textarea: {
+      variants: {
+        outline: (props: Record<string, any>) => {
+          const { focusBorderColor, theme } = props;
+          const color = focusBorderColor || mode("pink.500", "pink.300")(props);
+          return {
+            _focus: {
+              borderColor: getColor(theme, color),
+              boxShadow: `0 0 0 1px ${getColor(theme, color)}`,
+            },
+          };
+        },
       },
     },
   },

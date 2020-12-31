@@ -4,13 +4,13 @@ import { formatError } from "utils/error";
 import { Box, BoxProps, Text } from "@chakra-ui/react";
 
 export interface ErrorBoxProps extends BoxProps {
-  children: Error;
+  children: Error | string;
 }
 
 export const ErrorBox: FC<ErrorBoxProps> = ({ children, ...otherProps }) => (
   <Box px={3} py={2} bg="red.200" borderRadius="md" {...otherProps}>
     <Text fontSize="sm" color="red.900">
-      {formatError(children)}
+      {typeof children === "string" ? children : formatError(children as Error)}
     </Text>
   </Box>
 );

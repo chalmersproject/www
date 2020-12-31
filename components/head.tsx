@@ -6,10 +6,11 @@ export interface TitleProps {
 }
 
 export const Title: FC<TitleProps> = ({ children }) => {
-  const title = children ? `${children} | Chalmers` : "Chalmers";
+  const siteTitle = "Chalmers Project";
+  const pageTitle = children ? `${children} | ${siteTitle}` : siteTitle;
   return (
     <Head>
-      <title>{title}</title>
+      <title>{pageTitle}</title>
     </Head>
   );
 };

@@ -33,6 +33,7 @@
     "next": "10.0.4",
     "react": "17.0.1",
     "react-dom": "17.0.1",
+    "react-flatten-children": "^1.1.2",
     "react-hook-form": "^6.13.1",
     "react-icons": "^4.1.0",
     "tailwindcss": "^2.0.2"

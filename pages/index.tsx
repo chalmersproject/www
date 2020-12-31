@@ -1,38 +1,30 @@
 import React, { FC } from "react";
-import { gql, useQuery } from "@apollo/client";
+import NextLink from "next/link";
 
-import { Container } from "@chakra-ui/react";
+import { Box, Container } from "@chakra-ui/react";
+import { Text, Link } from "@chakra-ui/react";
 
 import { Layout } from "components/layout";
-import { ShelterList, SHELTER_LIST_FRAGMENTS } from "components/shelter-list";
 
-import { AdminQuery } from "schema";
-
-export const ADMIN_QUERY = gql`
-  query AdminQuery {
-    viewer {
-      ...ShelterList_viewer
-    }
-    shelters(limit: 50) {
-      ...ShelterList_shelter
-    }
-  }
-
-  ${SHELTER_LIST_FRAGMENTS}
-`;
-
-const Admin: FC = () => {
-  const { data, loading: isLoading, refetch } = useQuery<AdminQuery>(
-    ADMIN_QUERY,
-  );
-  const { viewer, shelters } = data ?? {};
+const Home: FC = () => {
   return (
-    <Layout title="Admin">
+    <Layout>
       <Container my={4}>
-        <ShelterList {...{ viewer, shelters, refetch, isLoading }} />
+        <Text fontWeight="medium" fontSize="lg">
+          This page is under construction. 👷‍♀️
+        </Text>
+        <Box my={2}>
+          <Text>
+            If you&apos;re an admin, head on over to the{" "}
+            <NextLink href="/admin" passHref>
+              <Link color="pink.500">admin panel</Link>
+            </NextLink>
+            .
+          </Text>
+        </Box>
       </Container>
     </Layout>
   );
 };
 
-export default Admin;
+export default Home;

@@ -1,21 +1,25 @@
-import React, { FC } from "react";
-import { gql, useQuery } from "@apollo/client";
+import React, { FC, ReactNode } from "react";
+import { useQuery, gql } from "@apollo/client";
+import { useLogin, useLogout } from "utils/auth";
+
+import isEmpty from "lodash/isEmpty";
+import flattenChildren from "react-flatten-children";
 
 import { HiLogout, HiUser } from "react-icons/hi";
 import { HiSun, HiMoon } from "react-icons/hi";
 
-import { BoxProps, HStack, Icon, Spacer } from "@chakra-ui/react";
+import { BoxProps, HStack, Spacer } from "@chakra-ui/react";
 import { Button } from "@chakra-ui/react";
 import { Avatar } from "@chakra-ui/react";
-import { Text } from "@chakra-ui/react";
+import { Text, Icon } from "@chakra-ui/react";
 import { Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
 import { MenuProps } from "@chakra-ui/react";
+import { Breadcrumb } from "@chakra-ui/react";
 import { useColorMode } from "@chakra-ui/react";
-
-import { useLogin, useLogout } from "utils/auth";
 
 import { HeaderQuery } from "schema";
 import { HeaderMenu_viewer } from "schema";
+import { useFirebaseUser } from "services/firebase";
 
 const HEADER_MENU_FRAGMENTS = gql`
   fragment HeaderMenu_viewer on User {
@@ -26,14 +30,9 @@ const HEADER_MENU_FRAGMENTS = gql`
 
 interface HeaderMenuProps extends Partial<MenuProps> {
   viewer: HeaderMenu_viewer | null | undefined;
-  isLoading: boolean;
 }
 
-const HeaderMenu: FC<HeaderMenuProps> = ({
-  viewer,
-  isLoading,
-  ...otherProps
-}) => {
+const HeaderMenu: FC<HeaderMenuProps> = ({ viewer, ...otherProps }) => {
   const { name, imageUrl } = viewer ?? {};
   const login = useLogin();
   const logout = useLogout();
@@ -45,7 +44,7 @@ const HeaderMenu: FC<HeaderMenuProps> = ({
     <Menu {...otherProps}>
       <MenuButton
         as={Button}
-        isDisabled={isLoading}
+        isDisabled={viewer === undefined}
         p={1}
         borderRadius="full"
         bg="pink.300"
@@ -102,15 +101,27 @@ const HEADER_QUERY = gql`
   ${HEADER_MENU_FRAGMENTS}
 `;
 
-export interface HeaderProps extends BoxProps {}
+export interface HeaderProps extends BoxProps {
+  crumbs?: ReactNode;
+}
 
-export const Header: FC<HeaderProps> = ({ ...otherProps }) => {
-  const { data, loading } = useQuery<HeaderQuery>(HEADER_QUERY, {});
+export const Header: FC<HeaderProps> = ({ crumbs, ...otherProps }) => {
+  const user = useFirebaseUser();
+
+  const { data } = useQuery<HeaderQuery>(HEADER_QUERY, {
+    skip: user === undefined,
+  });
   const { viewer } = data ?? {};
+
   return (
-    <HStack p={4} {...otherProps}>
+    <HStack py={4} px={8} {...otherProps}>
+      {!isEmpty(crumbs) && (
+        <Breadcrumb py={0.5} px={2} borderRadius="md" bg="pink.50">
+          {flattenChildren(crumbs)}
+        </Breadcrumb>
+      )}
       <Spacer />
-      <HeaderMenu viewer={viewer} isLoading={loading} />
+      <HeaderMenu viewer={viewer} />
     </HStack>
   );
 };
