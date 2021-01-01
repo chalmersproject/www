@@ -10,7 +10,17 @@ to = "https://api.chalmersproject.com/graphql"
 status = 200
 
 
-# Redirect unmatched paths to the 404 page.
+[[redirect]]
+from = "/shelter/:slug/admin"
+to = "/shelter/[slug]/admin.html"
+status = 200
+
+[[redirect]]
+from = "/shelter/:slug"
+to = "/shelter/[slug].html"
+status = 200
+
 [[redirects]]
 from = "/*"
 to = "/404.html"
+status = 200
