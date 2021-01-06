@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "next dev",
-    "build": "next build && next export -o dist",
+    "build": "next build",
     "apollo-fetch": "apollo client:download-schema --endpoint http://127.0.0.1:8080/graphql",
     "apollo-generate": "apollo client:codegen --target typescript --outputFlat schema.ts",
     "format": "prettier --write .",
