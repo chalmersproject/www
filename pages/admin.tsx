@@ -39,7 +39,7 @@ const Admin: FC = () => {
   const { viewer, shelters } = data ?? {};
 
   return (
-    <Layout title="Admin" crumbs={<AdminCrumb isCurrentPage />}>
+    <Layout pageTitle="Admin" crumbs={<AdminCrumb isCurrentPage />}>
       <AdminGuard as={Container} viewer={viewer} my={4}>
         <ShelterList
           shelters={shelters}

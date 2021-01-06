@@ -31,6 +31,7 @@
     "libphonenumber-js": "^1.9.6",
     "lodash": "^4.17.20",
     "next": "10.0.4",
+    "querystring": "^0.2.0",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-flatten-children": "^1.1.2",

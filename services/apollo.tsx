@@ -18,6 +18,7 @@ import { setContext } from "@apollo/client/link/context";
 import { InMemoryCache, NormalizedCacheObject } from "@apollo/client";
 
 import { FirebaseUser, useFirebaseUser } from "services/firebase";
+import { GetServerSidePropsContext } from "next";
 
 /**
  * Create an Apollo Client that can send both authenticated and anonymous
@@ -75,4 +76,17 @@ export const useResetApolloStoreOnUserLoad = (): void => {
 export const ResetApolloStoreHandler: FC = ({ children }) => {
   useResetApolloStoreOnUserLoad();
   return <>{children}</>;
+};
+
+let serverClient: ApolloClient | null = null;
+
+export const getServerClient = (): ApolloClient => {
+  if (!serverClient) {
+    const serverUrl = `${process.env.NEXT_API_URL}/graphql`;
+    serverClient = new Client({
+      uri: serverUrl,
+      cache: new InMemoryCache(),
+    });
+  }
+  return serverClient;
 };

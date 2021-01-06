@@ -273,6 +273,34 @@ export interface AdminQuery {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: ShelterMetaQuery
+// ====================================================
+
+export interface ShelterMetaQuery_shelter {
+  __typename: "Shelter";
+  id: string;
+  name: string;
+  about: string | null;
+  imageUrl: string | null;
+}
+
+export interface ShelterMetaQuery {
+  /**
+   * Get a `Shelter` by its slug.
+   */
+  shelter: ShelterMetaQuery_shelter | null;
+}
+
+export interface ShelterMetaQueryVariables {
+  slug: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: ShelterAdminQuery
 // ====================================================
 
@@ -305,6 +333,33 @@ export interface ShelterAdminQuery {
 }
 
 export interface ShelterAdminQueryVariables {
+  slug: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: ShelterAdminMetaQuery
+// ====================================================
+
+export interface ShelterAdminMetaQuery_shelter {
+  __typename: "Shelter";
+  id: string;
+  name: string;
+  imageUrl: string | null;
+}
+
+export interface ShelterAdminMetaQuery {
+  /**
+   * Get a `Shelter` by its slug.
+   */
+  shelter: ShelterAdminMetaQuery_shelter | null;
+}
+
+export interface ShelterAdminMetaQueryVariables {
   slug: string;
 }
 
