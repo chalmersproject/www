@@ -2,6 +2,9 @@
 publish = "dist"
 command = "yarn build"
 
+[[plugins]]
+package = "netlify-plugin-cache-nextjs"
+
 
 # Proxy GraphQL API requests.
 [[redirects]]
@@ -16,11 +19,17 @@ to = "/shelter/[slug]/admin.html"
 status = 200
 
 [[redirect]]
+from = "/shelter/*/admin"
+to = "/shelter/[slug]/admin.html"
+status = 200
+
+[[redirect]]
 from = "/shelter/:slug"
 to = "/shelter/[slug].html"
 status = 200
 
-[[redirects]]
-from = "/*"
-to = "/404.html"
+[[redirect]]
+from = "/shelter/*"
+to = "/shelter/[slug].html"
 status = 200
+
