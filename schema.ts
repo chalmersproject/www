@@ -236,16 +236,16 @@ export interface ShelterFormQueryVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: AdminQuery
+// GraphQL query operation: HomeQuery
 // ====================================================
 
-export interface AdminQuery_viewer {
+export interface HomeQuery_viewer {
   __typename: "User";
   id: string;
   isAdmin: boolean;
 }
 
-export interface AdminQuery_shelters {
+export interface HomeQuery_shelters {
   __typename: "Shelter";
   id: string;
   name: string;
@@ -256,15 +256,59 @@ export interface AdminQuery_shelters {
   tags: ShelterTag[];
 }
 
-export interface AdminQuery {
+export interface HomeQuery {
   /**
    * Get the currently authenticated `User`.
    */
-  viewer: AdminQuery_viewer | null;
+  viewer: HomeQuery_viewer | null;
   /**
    * List all registered `Shelter`s.
    */
-  shelters: AdminQuery_shelters[];
+  shelters: HomeQuery_shelters[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: ShelterHomeQuery
+// ====================================================
+
+export interface ShelterHomeQuery_viewer {
+  __typename: "User";
+  id: string;
+  isAdmin: boolean;
+}
+
+export interface ShelterHomeQuery_shelter {
+  __typename: "Shelter";
+  id: string;
+  name: string;
+  about: string | null;
+  imageUrl: string | null;
+  email: string | null;
+  phone: string;
+  websiteUrl: string | null;
+  location: any;
+  slug: string;
+  tags: ShelterTag[];
+}
+
+export interface ShelterHomeQuery {
+  /**
+   * Get the currently authenticated `User`.
+   */
+  viewer: ShelterHomeQuery_viewer | null;
+  /**
+   * Get a `Shelter` by its slug.
+   */
+  shelter: ShelterHomeQuery_shelter | null;
+}
+
+export interface ShelterHomeQueryVariables {
+  slug: string;
 }
 
 /* tslint:disable */
@@ -280,7 +324,6 @@ export interface ShelterMetaQuery_shelter {
   __typename: "Shelter";
   id: string;
   name: string;
-  about: string | null;
   imageUrl: string | null;
 }
 
@@ -292,74 +335,6 @@ export interface ShelterMetaQuery {
 }
 
 export interface ShelterMetaQueryVariables {
-  slug: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: ShelterAdminQuery
-// ====================================================
-
-export interface ShelterAdminQuery_viewer {
-  __typename: "User";
-  id: string;
-  isAdmin: boolean;
-}
-
-export interface ShelterAdminQuery_shelter {
-  __typename: "Shelter";
-  id: string;
-  name: string;
-  slug: string;
-  about: string | null;
-  imageUrl: string | null;
-  food: ShelterFood;
-  tags: ShelterTag[];
-}
-
-export interface ShelterAdminQuery {
-  /**
-   * Get the currently authenticated `User`.
-   */
-  viewer: ShelterAdminQuery_viewer | null;
-  /**
-   * Get a `Shelter` by its slug.
-   */
-  shelter: ShelterAdminQuery_shelter | null;
-}
-
-export interface ShelterAdminQueryVariables {
-  slug: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: ShelterAdminMetaQuery
-// ====================================================
-
-export interface ShelterAdminMetaQuery_shelter {
-  __typename: "Shelter";
-  id: string;
-  name: string;
-  imageUrl: string | null;
-}
-
-export interface ShelterAdminMetaQuery {
-  /**
-   * Get a `Shelter` by its slug.
-   */
-  shelter: ShelterAdminMetaQuery_shelter | null;
-}
-
-export interface ShelterAdminMetaQueryVariables {
   slug: string;
 }
 
@@ -499,21 +474,6 @@ export interface HeaderMenu_viewer {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL fragment: ShelterAdminCrumb_shelter
-// ====================================================
-
-export interface ShelterAdminCrumb_shelter {
-  __typename: "Shelter";
-  name: string;
-  slug: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL fragment: ShelterCard_shelter
 // ====================================================
 
@@ -534,6 +494,21 @@ export interface ShelterCard_shelter {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL fragment: ShelterCrumb_shelter
+// ====================================================
+
+export interface ShelterCrumb_shelter {
+  __typename: "Shelter";
+  name: string;
+  slug: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL fragment: ShelterList_shelter
 // ====================================================
 
@@ -545,6 +520,20 @@ export interface ShelterList_shelter {
   about: string | null;
   imageUrl: string | null;
   food: ShelterFood;
+  tags: ShelterTag[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL fragment: ShelterTags_shelter
+// ====================================================
+
+export interface ShelterTags_shelter {
+  __typename: "Shelter";
   tags: ShelterTag[];
 }
 

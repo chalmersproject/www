@@ -1,6 +1,6 @@
 import React, { FC, ReactNode } from "react";
 import { call } from "utils/function";
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { useQuery, useMutation, gql } from "@apollo/client";
 
 import { useForm } from "react-hook-form";
 import { useTypedController } from "@hookform/strictly-typed";
@@ -22,10 +22,9 @@ import { Text } from "@chakra-ui/react";
 import { Skeleton } from "@chakra-ui/react";
 import { Button } from "@chakra-ui/react";
 import { Image } from "@chakra-ui/react";
-import { useBreakpointValue } from "@chakra-ui/react";
 import { useDisclosure, UseDisclosureReturn } from "@chakra-ui/react";
 import { useToast } from "@chakra-ui/react";
-import { useColorModeValue } from "@chakra-ui/react";
+import { useBreakpointValue, useColorModeValue } from "@chakra-ui/react";
 
 import { FormControl, FormLabel } from "@chakra-ui/react";
 import { Textarea } from "@chakra-ui/react";
@@ -212,7 +211,6 @@ export const ShelterForm: FC<ShelterFormProps> = ({
   ...otherProps
 }) => {
   const toast = useToast();
-  const numColumns = useBreakpointValue({ base: 1, sm: 2 });
   const disclosure = useDisclosure();
   const { onClose: closeModal } = disclosure;
 
@@ -296,9 +294,11 @@ export const ShelterForm: FC<ShelterFormProps> = ({
 
   const isNew = !shelterId;
   const imageUrl = watch("imageUrl", defaults?.imageUrl);
+
+  const sectionColumns = useBreakpointValue({ base: 1, sm: 2 });
   const sectionBg = useColorModeValue("gray.100", "gray.800");
 
-  const renderForm = () => {
+  const renderFields = () => {
     if (isLoading) {
       return [...Array(5)].map((_, index) => <Skeleton key={index} h={16} />);
     }
@@ -424,13 +424,7 @@ export const ShelterForm: FC<ShelterFormProps> = ({
           </InputGroup>
           <FormErrorMessage errors={formErrors} name="imageUrl" />
           {imageUrl && (
-            <HStack
-              align="flex-start"
-              p={3}
-              borderRadius="md"
-              bg={sectionBg}
-              mt={2}
-            >
+            <HStack align="start" p={3} rounded="md" bg={sectionBg} mt={2}>
               <Text fontSize="sm" fontWeight="medium">
                 Preview:
               </Text>
@@ -440,14 +434,14 @@ export const ShelterForm: FC<ShelterFormProps> = ({
                 alt="Shelter Image Preview"
                 fit="cover"
                 boxSize={32}
-                borderRadius="md"
+                rounded="md"
               />
             </HStack>
           )}
         </FormControl>
         <FormControl isInvalid={!!formErrors.address}>
           <FormLabel>Address</FormLabel>
-          <VStack spacing={2} p={3} borderRadius="md" bg={sectionBg}>
+          <VStack align="stretch" spacing={2} rounded="md" p={3} bg={sectionBg}>
             <FormControl isInvalid={!!formErrors.address?.line1}>
               <FormLabel fontSize="sm" mb={0}>
                 Line 1
@@ -480,7 +474,7 @@ export const ShelterForm: FC<ShelterFormProps> = ({
               />
               <FormErrorMessage errors={formErrors} name="address.line2" />
             </FormControl>
-            <SimpleGrid columns={numColumns} spacing={2}>
+            <SimpleGrid columns={sectionColumns} spacing={2}>
               <FormControl isInvalid={!!formErrors.address?.city}>
                 <FormLabel fontSize="sm" mb={0}>
                   City
@@ -554,7 +548,13 @@ export const ShelterForm: FC<ShelterFormProps> = ({
         </FormControl>
         <FormControl isInvalid={!!formErrors.location}>
           <FormLabel>Location</FormLabel>
-          <HStack align="flex-start" p={3} borderRadius="md" bg={sectionBg}>
+          <SimpleGrid
+            columns={sectionColumns}
+            spacing={2}
+            rounded="md"
+            p={3}
+            bg={sectionBg}
+          >
             <FormControl isInvalid={!!(formErrors.location ?? [])[1]}>
               <FormLabel fontSize="sm" mb={0}>
                 Latitude
@@ -609,11 +609,17 @@ export const ShelterForm: FC<ShelterFormProps> = ({
               />
               <FormErrorMessage errors={formErrors} name="location[0]" />
             </FormControl>
-          </HStack>
+          </SimpleGrid>
         </FormControl>
         <FormControl>
           <FormLabel>Capacity</FormLabel>
-          <HStack align="flex-start" p={3} borderRadius="md" bg={sectionBg}>
+          <SimpleGrid
+            columns={sectionColumns}
+            spacing={2}
+            rounded="md"
+            p={3}
+            bg={sectionBg}
+          >
             <FormControl isInvalid={!!formErrors.capacity?.spots}>
               <FormLabel fontSize="sm" mb={0}>
                 Spots
@@ -676,7 +682,7 @@ export const ShelterForm: FC<ShelterFormProps> = ({
               />
               <FormErrorMessage errors={formErrors} name="capacity.beds" />
             </FormControl>
-          </HStack>
+          </SimpleGrid>
         </FormControl>
         <FormControl isInvalid={!!formErrors.food} isReadOnly={isReadOnly}>
           <FormLabel>Food Options</FormLabel>
@@ -686,7 +692,7 @@ export const ShelterForm: FC<ShelterFormProps> = ({
             defaultValue={defaults?.food ?? null}
             render={({ value, onChange }) => (
               <RadioGroup value={value ?? undefined} onChange={onChange}>
-                <HStack spacing={4} p={3} borderRadius="md" bg={sectionBg}>
+                <HStack spacing={4} p={3} rounded="md" bg={sectionBg}>
                   <Radio value={ShelterFood.MEALS} isReadOnly={isReadOnly}>
                     Meals
                   </Radio>
@@ -711,9 +717,9 @@ export const ShelterForm: FC<ShelterFormProps> = ({
             render={({ value, onChange }) => (
               <CheckboxGroup value={value} onChange={onChange}>
                 <SimpleGrid
-                  columns={numColumns}
+                  columns={sectionColumns}
+                  rounded="md"
                   p={3}
-                  borderRadius="md"
                   bg={sectionBg}
                 >
                   <Checkbox value={ShelterTag.ADULT} isReadOnly={isReadOnly}>
@@ -761,7 +767,7 @@ export const ShelterForm: FC<ShelterFormProps> = ({
             <ModalCloseButton />
             <ModalBody>
               <VStack align="stretch" spacing={4}>
-                {renderForm()}
+                {renderFields()}
               </VStack>
             </ModalBody>
             <ModalFooter>

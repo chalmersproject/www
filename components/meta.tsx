@@ -1,11 +1,11 @@
 import React, { FC } from "react";
 import Head from "next/head";
 
-export interface TitleProps {
-  readonly children?: string | string[] | null;
+export interface PageTitleProps {
+  readonly title?: string | string[] | null;
 }
 
-export const Title: FC<TitleProps> = ({ children: title }) => {
+export const PageTitle: FC<PageTitleProps> = ({ title }) => {
   const siteTitle = "Chalmers Project";
   const propTitle = Array.isArray(title) ? title.join(" | ") : title;
   const pageTitle = propTitle ? `${propTitle} | ${siteTitle}` : siteTitle;
@@ -18,48 +18,49 @@ export const Title: FC<TitleProps> = ({ children: title }) => {
   );
 };
 
-export interface DescriptionProps {
-  readonly children?: string | null;
+export interface PageDescriptionProps {
+  readonly description?: string | null;
 }
 
-export const Description: FC<DescriptionProps> = ({ children: text }) => {
-  if (!text) return null;
+export const PageDescription: FC<PageDescriptionProps> = ({ description }) => {
+  if (!description) return null;
   return (
     <Head>
-      <meta name="description" content={text} />
-      <meta name="og:description" property="og:description" content={text} />
+      <meta name="description" content={description} />
+      <meta
+        name="og:description"
+        property="og:description"
+        content={description}
+      />
       <meta
         name="twitter:description"
         property="twitter:description"
-        content={text}
+        content={description}
       />
     </Head>
   );
 };
 
-export interface ImageProps {
-  readonly url?: string | null;
+export interface PageImageProps {
+  readonly imageUrl?: string | null;
 }
 
-export const Image: FC<ImageProps> = ({ url }) => {
-  if (!url) return null;
+export const PageImage: FC<PageImageProps> = ({ imageUrl }) => {
+  if (!imageUrl) return null;
   return (
     <Head>
-      <meta name="og:image" property="og:image" content={url} />
-      <meta name="twitter:image" property="twitter:image" content={url} />
+      <meta name="og:image" property="og:image" content={imageUrl} />
+      <meta name="twitter:image" property="twitter:image" content={imageUrl} />
     </Head>
   );
 };
 
-export interface SiteNameProps {
-  readonly children?: string;
-}
+export interface SiteNameProps {}
 
-export const SiteName: FC<SiteNameProps> = ({ children: name }) => {
-  if (!name) return null;
+export const SiteName: FC<SiteNameProps> = () => {
   return (
     <Head>
-      <meta property="og:site_name" content={name} />
+      <meta property="og:site_name" content="Chalmers Project" />
     </Head>
   );
 };

@@ -50,14 +50,24 @@ const THEME = extendTheme({
     },
   },
   components: {
-    Checkbox: {
-      defaultProps: {
-        colorScheme: "pink",
+    Form: {
+      baseStyle: {
+        helperText: {
+          mt: 1,
+        },
       },
     },
     FormLabel: {
       baseStyle: {
         mb: 1,
+      },
+    },
+    FormError: {
+      baseStyle: {
+        text: {
+          mt: 1,
+          lineHeight: "normal",
+        },
       },
     },
     Input: {
@@ -92,11 +102,6 @@ const THEME = extendTheme({
         },
       },
     },
-    Radio: {
-      defaultProps: {
-        colorScheme: "pink",
-      },
-    },
     Textarea: {
       variants: {
         outline: (props: Record<string, any>) => {
@@ -109,6 +114,16 @@ const THEME = extendTheme({
             },
           };
         },
+      },
+    },
+    Radio: {
+      defaultProps: {
+        colorScheme: "pink",
+      },
+    },
+    Checkbox: {
+      defaultProps: {
+        colorScheme: "pink",
       },
     },
   },

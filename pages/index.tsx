@@ -1,30 +1,63 @@
 import React, { FC } from "react";
-import NextLink from "next/link";
+import { useRouter } from "next/router";
+import { useFirebaseUser } from "services/firebase";
+import { useQuery, gql } from "@apollo/client";
 
-import { Box, Container } from "@chakra-ui/react";
-import { Text, Link } from "@chakra-ui/react";
+import { Container } from "@chakra-ui/react";
+import { Button } from "@chakra-ui/react";
 
 import { Layout } from "components/layout";
+import { HomeCrumb } from "components/shelters-crumb";
+import { ShelterList } from "components/shelter-list";
+import { ShelterForm } from "components/shelter-form";
 
-const Home: FC = () => {
+import { SHELTER_LIST_FRAGMENTS } from "components/shelter-list";
+
+import { HomeQuery } from "schema";
+
+export const SHELTERS_QUERY = gql`
+  query HomeQuery {
+    viewer {
+      id
+      isAdmin
+    }
+    shelters(limit: 50) {
+      ...ShelterList_shelter
+    }
+  }
+
+  ${SHELTER_LIST_FRAGMENTS}
+`;
+
+const Shelters: FC = () => {
+  const router = useRouter();
+  const user = useFirebaseUser();
+
+  const { data, refetch } = useQuery<HomeQuery>(SHELTERS_QUERY, {
+    skip: user === undefined,
+  });
+  const { viewer, shelters } = data ?? {};
+  const { isAdmin } = viewer ?? {};
+
   return (
-    <Layout>
-      <Container my={4}>
-        <Text fontWeight="medium" fontSize="lg">
-          This page is under construction. 👷‍♀️
-        </Text>
-        <Box my={2}>
-          <Text>
-            If you&apos;re an admin, head on over to the{" "}
-            <NextLink href="/admin" passHref>
-              <Link color="pink.500">admin panel</Link>
-            </NextLink>
-            .
-          </Text>
-        </Box>
+    <Layout breadcrumbs={<HomeCrumb isCurrentPage />}>
+      <Container>
+        <ShelterList
+          shelters={shelters}
+          onItemClick={({ slug }) => router.push(`/shelter/${slug}`)}
+        />
+        {isAdmin && (
+          <ShelterForm onCreate={() => refetch()}>
+            {({ onOpen }) => (
+              <Button onClick={onOpen} colorScheme="pink" my={4}>
+                New Shelter
+              </Button>
+            )}
+          </ShelterForm>
+        )}
       </Container>
     </Layout>
   );
 };
 
-export default Home;
+export default Shelters;

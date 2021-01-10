@@ -1,3 +1,4 @@
+import { sleep } from "utils/time";
 import { gql } from "@apollo/client";
 
 import { ApolloClient, useApolloClient } from "services/apollo";
@@ -93,6 +94,8 @@ export const useLogin = (): (() => Promise<void>) | null => {
         if (!additionalUserInfo) {
           throw new Error("Missing profile info from provider.");
         }
+
+        await sleep(1);
         const viewer = await getViewer(client);
 
         const {

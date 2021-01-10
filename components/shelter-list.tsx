@@ -1,16 +1,14 @@
 import React, { FC } from "react";
-import { gql } from "@apollo/client";
 import isEmpty from "lodash/isEmpty";
+import { fill } from "utils/placeholder";
+import { gql } from "@apollo/client";
 
 import { Box, BoxProps, VStack } from "@chakra-ui/react";
 import { Text } from "@chakra-ui/react";
 import { useColorModeValue } from "@chakra-ui/react";
 
-import {
-  ShelterCard,
-  ShelterCardProps,
-  SHELTER_CARD_FRAGMENTS,
-} from "components/shelter-card";
+import { ShelterCard, ShelterCardProps } from "components/shelter-card";
+import { SHELTER_CARD_FRAGMENTS } from "components/shelter-card";
 
 import { ShelterList_shelter } from "schema";
 
@@ -33,33 +31,32 @@ export const ShelterList: FC<ShelterListProps> = ({
   onItemClick,
   ...otherProps
 }) => {
-  const sheltersOrPlaceholders: (ShelterList_shelter | undefined)[] =
-    shelters === undefined ? [...new Array(3)] : shelters ?? [];
+  const items = fill(shelters, 3);
+
+  const placeholderBg = useColorModeValue("gray.100", "gray.600");
+  const placeholderColor = useColorModeValue("gray.500", "gray.300");
+
   return (
     <VStack align="stretch" {...otherProps}>
       <Text fontSize="2xl" fontWeight="semibold">
         Shelters
       </Text>
-      {!isEmpty(sheltersOrPlaceholders) ? (
+      {!isEmpty(items) ? (
         <VStack align="stretch" spacing={3}>
-          {sheltersOrPlaceholders.map((shelter, index) => (
-            <ShelterCard
-              key={shelter?.id ?? index}
-              shelter={shelter}
-              onClick={shelter ? onItemClick : undefined}
-            />
-          ))}
+          {items.map((shelter, index) => {
+            const { id: shelterId } = shelter ?? {};
+            return (
+              <ShelterCard
+                key={shelterId ?? index}
+                shelter={shelter}
+                onClick={onItemClick}
+              />
+            );
+          })}
         </VStack>
       ) : (
-        <Box
-          p={4}
-          borderRadius="md"
-          bg={useColorModeValue("gray.100", "gray.600")}
-        >
-          <Text
-            fontWeight="medium"
-            color={useColorModeValue("gray.500", "gray.300")}
-          >
+        <Box p={4} rounded="md" bg={placeholderBg}>
+          <Text fontWeight="medium" color={placeholderColor}>
             No shelters registered.
           </Text>
         </Box>

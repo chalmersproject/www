@@ -1,45 +1,53 @@
 import React, { FC } from "react";
 
-import { Title, TitleProps } from "components/head";
-import { Image, ImageProps } from "components/head";
-import { Description, DescriptionProps } from "components/head";
-import { PageURL, PageURLProps } from "components/head";
-import { PageType, PageTypeProps } from "components/head";
+import { Box, BoxProps, Flex } from "@chakra-ui/react";
+
+import { PageTitle, PageTitleProps } from "components/meta";
+import { PageImage, PageImageProps } from "components/meta";
+import { PageDescription, PageDescriptionProps } from "components/meta";
+import { PageURL, PageURLProps } from "components/meta";
+import { PageType, PageTypeProps } from "components/meta";
+
 import { Header, HeaderProps } from "components/header";
 
-import { Flex, BoxProps, VStack } from "@chakra-ui/react";
-
 export interface LayoutProps
-  extends Omit<BoxProps, "title">,
-    Pick<HeaderProps, "crumbs"> {
-  pageTitle?: TitleProps["children"];
-  pageDescription?: DescriptionProps["children"];
-  pageImageUrl?: ImageProps["url"];
+  extends BoxProps,
+    Pick<HeaderProps, "breadcrumbs"> {
   pageUrl?: PageURLProps["url"];
   pageType?: PageTypeProps["type"];
+  pageTitle?: PageTitleProps["title"];
+  pageDescription?: PageDescriptionProps["description"];
+  pageImageUrl?: PageImageProps["imageUrl"];
 }
 
 export const Layout: FC<LayoutProps> = ({
-  pageTitle: title,
-  pageDescription: description,
-  pageImageUrl: imageUrl,
+  pageTitle,
+  pageDescription,
+  pageImageUrl,
   pageUrl,
   pageType = "website",
-  crumbs,
+  breadcrumbs,
   children,
   ...otherProps
 }) => (
   <>
-    <Title>{title}</Title>
-    <Description>{description}</Description>
-    <Image url={imageUrl} />
-    <PageURL url={pageUrl} />
-    <PageType type={pageType} />
+    <>
+      <PageTitle title={pageTitle} />
+      <PageDescription description={pageDescription} />
+      <PageImage imageUrl={pageImageUrl} />
+      <PageURL url={pageUrl} />
+      <PageType type={pageType} />
+    </>
     <Flex direction="column" minH="100vh">
-      <Header crumbs={crumbs} />
-      <VStack as="main" align="stretch" {...otherProps}>
+      <Header breadcrumbs={breadcrumbs} />
+      <Box as="main" w="full" py={4} {...otherProps}>
         {children}
-      </VStack>
+      </Box>
+      <Footer />
     </Flex>
   </>
 );
+
+const Footer: FC = () => {
+  return <Box h={10} />;
+};

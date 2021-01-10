@@ -8,7 +8,7 @@ export interface ErrorBoxProps extends BoxProps {
 }
 
 export const ErrorBox: FC<ErrorBoxProps> = ({ children, ...otherProps }) => (
-  <Box px={3} py={2} bg="red.200" borderRadius="md" {...otherProps}>
+  <Box px={3} py={2} bg="red.200" rounded="md" {...otherProps}>
     <Text fontSize="sm" color="red.900">
       {typeof children === "string" ? children : formatError(children as Error)}
     </Text>

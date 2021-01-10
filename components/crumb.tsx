@@ -1,9 +1,14 @@
 import React, { FC } from "react";
 import Link, { LinkProps } from "next/link";
 
-import { BreadcrumbItem, BreadcrumbItemProps } from "@chakra-ui/react";
+import {
+  BreadcrumbItem,
+  BreadcrumbItemProps,
+  useColorModeValue,
+} from "@chakra-ui/react";
 import { BreadcrumbLink } from "@chakra-ui/react";
 import { SkeletonText } from "@chakra-ui/react";
+import { useTransparentize } from "utils/theme";
 
 export interface CrumbProps extends BreadcrumbItemProps {
   href?: LinkProps["href"];
@@ -15,25 +20,35 @@ export const Crumb: FC<CrumbProps> = ({
   children,
   ...otherProps
 }) => {
-  const link = (
+  const currentLinkColor = useColorModeValue("pink.800", "pink.300");
+
+  const linkColorTransparency = 0.75;
+  const linkColorLight = useTransparentize("pink.800", linkColorTransparency);
+  const linkColorDark = useTransparentize("pink.300", linkColorTransparency);
+  const linkColor = useColorModeValue(linkColorLight, linkColorDark);
+
+  const renderLink = () => (
     <BreadcrumbLink
       fontWeight={isCurrentPage ? "medium" : undefined}
-      color={isCurrentPage ? "pink.800" : "pink.700"}
+      color={isCurrentPage ? currentLinkColor : linkColor}
     >
-      {children ? (
-        children
-      ) : (
-        <SkeletonText skeletonHeight={3} noOfLines={1} w={20} />
-      )}
+      {children ?? <SkeletonText skeletonHeight={3} noOfLines={1} w={20} />}
     </BreadcrumbLink>
   );
+
   return (
     <BreadcrumbItem
       isCurrentPage={isCurrentPage}
       color="pink.200"
       {...otherProps}
     >
-      {href && !isCurrentPage ? <Link href={href}>{link}</Link> : link}
+      {href && !isCurrentPage ? (
+        <Link href={href} passHref>
+          {renderLink()}
+        </Link>
+      ) : (
+        renderLink()
+      )}
     </BreadcrumbItem>
   );
 };
