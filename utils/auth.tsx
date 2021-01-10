@@ -95,7 +95,7 @@ export const useLogin = (): (() => Promise<void>) | null => {
           throw new Error("Missing profile info from provider.");
         }
 
-        await sleep(1);
+        await client.resetStore();
         const viewer = await getViewer(client);
 
         const {
@@ -117,8 +117,6 @@ export const useLogin = (): (() => Promise<void>) | null => {
         } else {
           await createUserAccount(client, params);
         }
-
-        await client.resetStore();
       }
     : null;
 };

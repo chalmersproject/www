@@ -22,6 +22,9 @@ export const Crumb: FC<CrumbProps> = ({
 }) => {
   const currentLinkColor = useColorModeValue("pink.800", "pink.300");
 
+  const separatorColorDark = useTransparentize("pink.400", 0.64);
+  const separatorColor = useColorModeValue("pink.300", separatorColorDark);
+
   const linkColorTransparency = 0.75;
   const linkColorLight = useTransparentize("pink.800", linkColorTransparency);
   const linkColorDark = useTransparentize("pink.300", linkColorTransparency);
@@ -39,7 +42,7 @@ export const Crumb: FC<CrumbProps> = ({
   return (
     <BreadcrumbItem
       isCurrentPage={isCurrentPage}
-      color="pink.200"
+      color={separatorColor}
       {...otherProps}
     >
       {href && !isCurrentPage ? (

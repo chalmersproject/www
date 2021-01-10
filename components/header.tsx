@@ -5,14 +5,10 @@ import { useFirebaseUser } from "services/firebase";
 import isEmpty from "lodash/isEmpty";
 import flattenChildren from "react-flatten-children";
 
-import {
-  BoxProps,
-  HStack,
-  Spacer,
-  useBreakpointValue,
-  useColorModeValue,
-} from "@chakra-ui/react";
+import { BoxProps, HStack, Spacer } from "@chakra-ui/react";
+// import { Image } from "@chakra-ui/react";
 import { Breadcrumb } from "@chakra-ui/react";
+import { useBreakpointValue, useColorModeValue } from "@chakra-ui/react";
 
 import { HeaderMenu } from "components/header-menu";
 import { HEADER_MENU_FRAGMENTS } from "components/header-menu";
@@ -48,7 +44,8 @@ export const Header: FC<HeaderProps> = ({ breadcrumbs, ...otherProps }) => {
   const breadcrumbHidden = useBreakpointValue([true, false]);
 
   return (
-    <HStack py={4} px={[4, null, 8]} {...otherProps}>
+    <HStack as="header" spacing={3} h={20} px={[4, null, 8]} {...otherProps}>
+      {/* <Logo /> */}
       {!isEmpty(breadcrumbs) && !breadcrumbHidden && (
         <Breadcrumb py={0.5} px={2} rounded="md" bg={breadcrumbBg}>
           {flattenChildren(breadcrumbs)}
@@ -59,3 +56,7 @@ export const Header: FC<HeaderProps> = ({ breadcrumbs, ...otherProps }) => {
     </HStack>
   );
 };
+
+// export const Logo: FC = () => (
+//   <Image src="/assets/logo.svg" alt="Logo" boxSize={9} rounded="full" />
+// );

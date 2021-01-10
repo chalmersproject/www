@@ -16,11 +16,12 @@ import {
 } from "react-icons/hi";
 import { IconType } from "react-icons";
 
-import { Box, Container, HStack, VStack } from "@chakra-ui/react";
+import { Box, Container, HStack, VStack, SimpleGrid } from "@chakra-ui/react";
 import { Skeleton } from "@chakra-ui/react";
 import { Heading, Text, Link, LinkProps } from "@chakra-ui/react";
 import { Image } from "@chakra-ui/react";
 import { Icon, IconButton } from "@chakra-ui/react";
+import { Stat, StatGroup, StatLabel, StatNumber } from "@chakra-ui/react";
 import { Fade } from "@chakra-ui/react";
 import { useBreakpointValue, useColorModeValue } from "@chakra-ui/react";
 import { useTransparentize } from "utils/theme";
@@ -71,6 +72,14 @@ export const SHELTER_ADMIN_QUERY = gql`
       phone
       websiteUrl
       location
+      occupancy {
+        beds
+        spots
+      }
+      capacity {
+        beds
+        spots
+      }
       ...ShelterCrumb_shelter
       ...ShelterTags_shelter
     }
@@ -121,7 +130,7 @@ const Shelter: FC<ShelterProps> = ({ slug, url, shelter: shelterMeta }) => {
     >
       <VStack as={Container} align="stretch" spacing={6}>
         {imageUrl !== null && (
-          <Box h={[60, 80, 96]} rounded="md" overflow="hidden">
+          <Box h={[60, 80, 96]} rounded="lg" overflow="hidden">
             <Image
               src={imageUrl}
               alt={name}
@@ -160,13 +169,84 @@ const Shelter: FC<ShelterProps> = ({ slug, url, shelter: shelterMeta }) => {
             {about}
           </Text>
         </VStack>
-        <ShelterLinks shelter={shelter} />
+        <VStack align="stretch">
+          <ShelterLinks shelter={shelter} />
+          <ShelterStats shelter={shelter} />
+        </VStack>
       </VStack>
     </Layout>
   );
 };
 
 export default Shelter;
+
+interface ShelterStatsProps {
+  shelter: ShelterHomeQuery_shelter | undefined;
+}
+
+const ShelterStats: FC<ShelterStatsProps> = ({ shelter }) => {
+  const { occupancy, capacity } = shelter ?? {};
+
+  const headingColor = useColorModeValue("gray.800", "gray.200");
+  const labelColor = useColorModeValue("blue.600", "blue.300");
+
+  return (
+    <VStack align="stretch" spacing={1} rounded="lg" p={4}>
+      <Heading size="md" fontWeight="semibold" color={headingColor}>
+        Occupancy
+      </Heading>
+      <SimpleGrid
+        columns={2}
+        spacingX={3}
+        spacingY={1.5}
+        templateColumns="auto 10rem"
+      >
+        <Text fontWeight="medium" color={labelColor}>
+          Spots
+        </Text>
+        <ShelterStat occupancy={occupancy?.spots} capacity={capacity?.spots} />
+        <Text fontWeight="medium" color={labelColor}>
+          Beds
+        </Text>
+        <ShelterStat occupancy={occupancy?.beds} capacity={capacity?.beds} />
+      </SimpleGrid>
+    </VStack>
+  );
+};
+
+interface ShelterStatProps {
+  occupancy: number | undefined;
+  capacity: number | undefined;
+}
+
+const ShelterStat: FC<ShelterStatProps> = ({ occupancy, capacity }) => {
+  const labelColor = useColorModeValue("gray.500", "gray.300");
+  const valueColor = useColorModeValue("blue.600", "blue.400");
+  return (
+    <StatGroup>
+      <Stat minW={12}>
+        <StatLabel color={labelColor}>Available</StatLabel>
+        {occupancy !== undefined && capacity !== undefined ? (
+          <StatNumber color={valueColor}>{capacity - occupancy}</StatNumber>
+        ) : (
+          <Skeleton>
+            <StatNumber>10</StatNumber>
+          </Skeleton>
+        )}
+      </Stat>
+      <Stat minW={12}>
+        <StatLabel color={labelColor}>Capacity</StatLabel>
+        {capacity ? (
+          <StatNumber color={valueColor}>{capacity}</StatNumber>
+        ) : (
+          <Skeleton>
+            <StatNumber>10</StatNumber>
+          </Skeleton>
+        )}
+      </Stat>
+    </StatGroup>
+  );
+};
 
 interface ShelterLinksProps {
   shelter: ShelterHomeQuery_shelter | undefined;
@@ -184,11 +264,11 @@ const ShelterLinks: FC<ShelterLinksProps> = ({ shelter }) => {
   const headingColor = useColorModeValue("pink.800", "pink.200");
 
   return (
-    <VStack align="stretch" rounded="md" p={3} bg={containerBg}>
+    <VStack align="stretch" rounded="lg" p={4} bg={containerBg}>
       <Heading size="md" fontWeight="semibold" color={headingColor}>
         Quick Links
       </Heading>
-      <VStack align="stretch" spacing={1}>
+      <VStack align="stretch" spacing={1.5}>
         <ShelterLink
           icon={HiOutlinePhone}
           href={phone ? `tel:${phone}` : undefined}
@@ -235,7 +315,7 @@ const ShelterLink: FC<ShelterLinkProps> = ({
     <HStack>
       <Icon as={icon} boxSize={5} color={iconColor} />
       <Skeleton isLoaded={!!children}>
-        <Box rounded="sm" px={1.5} py="px" bg={linkBg}>
+        <Box rounded="md" px={2} py={0.5} bg={linkBg}>
           {children ? (
             <Link color={linkColor} {...{ href, target, rel }}>
               {children}

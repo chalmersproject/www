@@ -282,6 +282,18 @@ export interface ShelterHomeQuery_viewer {
   isAdmin: boolean;
 }
 
+export interface ShelterHomeQuery_shelter_occupancy {
+  __typename: "ShelterSpace";
+  beds: number;
+  spots: number;
+}
+
+export interface ShelterHomeQuery_shelter_capacity {
+  __typename: "ShelterSpace";
+  beds: number;
+  spots: number;
+}
+
 export interface ShelterHomeQuery_shelter {
   __typename: "Shelter";
   id: string;
@@ -292,6 +304,8 @@ export interface ShelterHomeQuery_shelter {
   phone: string;
   websiteUrl: string | null;
   location: any;
+  occupancy: ShelterHomeQuery_shelter_occupancy;
+  capacity: ShelterHomeQuery_shelter_capacity;
   slug: string;
   tags: ShelterTag[];
 }
