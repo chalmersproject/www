@@ -7,6 +7,7 @@ import { ApolloProvider } from "services/apollo";
 import { ChakraProvider } from "services/chakra";
 
 import { ResetApolloStoreHandler } from "services/apollo";
+import { MapboxStyles } from "components/mapbox";
 
 const App: FC<AppProps> = ({ Component, pageProps }) => {
   return (
@@ -15,6 +16,7 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
         <ChakraProvider>
           <ResetApolloStoreHandler>
             <SiteName />
+            <MapboxStyles />
             <Component {...pageProps} />
           </ResetApolloStoreHandler>
         </ChakraProvider>

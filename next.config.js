@@ -1,5 +1,3 @@
-const { gitDescribe } = require("git-describe");
-
 const API_URL = process.env.NEXT_API_URL;
 
 module.exports = {
@@ -10,8 +8,4 @@ module.exports = {
       basePath: false,
     },
   ],
-  generateBuildId: async () => {
-    const { raw } = await gitDescribe(__dirname);
-    return raw;
-  },
 };

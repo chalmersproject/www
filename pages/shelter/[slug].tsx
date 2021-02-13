@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from "react";
+import React, { FC, ReactNode, useMemo } from "react";
 import { useRouter } from "next/router";
 import { useQuery, gql } from "@apollo/client";
 
@@ -14,20 +14,30 @@ import {
   HiOutlinePencil,
   HiOutlinePhone,
 } from "react-icons/hi";
+
 import { IconType } from "react-icons";
 
-import { Box, Container, HStack, VStack, SimpleGrid } from "@chakra-ui/react";
+import {
+  Box,
+  Container,
+  HStack,
+  VStack,
+  SimpleGrid,
+  SkeletonText,
+  BoxProps,
+} from "@chakra-ui/react";
+
 import { Skeleton } from "@chakra-ui/react";
 import { Heading, Text, Link, LinkProps } from "@chakra-ui/react";
 import { Image } from "@chakra-ui/react";
 import { Icon, IconButton } from "@chakra-ui/react";
-import { Stat, StatGroup, StatLabel, StatNumber } from "@chakra-ui/react";
 import { Fade } from "@chakra-ui/react";
 import { useBreakpointValue, useColorModeValue } from "@chakra-ui/react";
 import { useTransparentize } from "utils/theme";
 
 import { Layout } from "components/layout";
 import { HomeCrumb } from "components/shelters-crumb";
+import { ShelterStat } from "components/shelter-stat";
 import { ShelterForm } from "components/shelter-form";
 import { ShelterTags } from "components/shelter-tags";
 import { ShelterCrumb } from "components/shelter-crumb";
@@ -36,6 +46,7 @@ import { SHELTER_CRUMB_FRAGMENTS } from "components/shelter-crumb";
 import { SHELTER_TAGS_FRAGMENTS } from "components/shelter-tags";
 
 import {
+  ShelterFood,
   ShelterHomeQuery,
   ShelterHomeQueryVariables,
   ShelterHomeQuery_shelter,
@@ -72,6 +83,7 @@ export const SHELTER_ADMIN_QUERY = gql`
       phone
       websiteUrl
       location
+      food
       occupancy {
         beds
         spots
@@ -114,7 +126,7 @@ const Shelter: FC<ShelterProps> = ({ slug, url, shelter: shelterMeta }) => {
   };
 
   const editButtonSize = useBreakpointValue(["sm", "md"]);
-  const aboutColor = useColorModeValue("gray.600", "gray.300");
+  const textColor = useColorModeValue("gray.600", "gray.300");
 
   return (
     <Layout
@@ -142,7 +154,7 @@ const Shelter: FC<ShelterProps> = ({ slug, url, shelter: shelterMeta }) => {
         )}
         <VStack align="stretch">
           <HStack align="start">
-            <VStack align="stretch" spacing={0.5} flex={1}>
+            <VStack align="stretch" spacing={1} flex={1}>
               <Heading size="lg">{name}</Heading>
               <ShelterTags shelter={shelter} />
             </VStack>
@@ -165,14 +177,13 @@ const Shelter: FC<ShelterProps> = ({ slug, url, shelter: shelterMeta }) => {
               </ShelterForm>
             </Fade>
           </HStack>
-          <Text lineHeight="short" color={aboutColor}>
+          <Text lineHeight="short" color={textColor}>
             {about}
           </Text>
         </VStack>
-        <VStack align="stretch">
-          <ShelterLinks shelter={shelter} />
-          <ShelterStats shelter={shelter} />
-        </VStack>
+        <ShelterFoodOptions shelter={shelter} />
+        <ShelterStats shelter={shelter} />
+        <ShelterLinks shelter={shelter} />
       </VStack>
     </Layout>
   );
@@ -180,18 +191,79 @@ const Shelter: FC<ShelterProps> = ({ slug, url, shelter: shelterMeta }) => {
 
 export default Shelter;
 
-interface ShelterStatsProps {
+interface ShelterFoodOptionsProps {
   shelter: ShelterHomeQuery_shelter | undefined;
 }
 
-const ShelterStats: FC<ShelterStatsProps> = ({ shelter }) => {
+const ShelterFoodOptions: FC<ShelterFoodOptionsProps> = ({ shelter }) => {
+  const { food } = shelter ?? {};
+
+  const headingColor = useColorModeValue("gray.800", "gray.200");
+  const textColor = useColorModeValue("gray.600", "gray.300");
+  const highlightWeight = "medium";
+  const highlightColor = useColorModeValue("pink.500", "pink.400");
+
+  const renderDescription = (): ReactNode => {
+    switch (food) {
+      case ShelterFood.NONE:
+        return (
+          <>
+            <Text as="span" fontWeight={highlightWeight} color={highlightColor}>
+              No food
+            </Text>{" "}
+            is available at this location.
+          </>
+        );
+      case ShelterFood.MEALS:
+        return (
+          <>
+            <Text as="span" fontWeight={highlightWeight} color={highlightColor}>
+              Full meals
+            </Text>{" "}
+            are available at this location.
+          </>
+        );
+      case ShelterFood.SNACKS:
+        return (
+          <>
+            <Text as="span" fontWeight={highlightWeight} color={highlightColor}>
+              Snacks
+            </Text>{" "}
+            (not full meals) are available at this location.
+          </>
+        );
+      default:
+        throw new Error("Unknown food option.");
+    }
+  };
+  return (
+    <VStack align="stretch" spacing={1} rounded="lg">
+      <Heading size="md" fontWeight="semibold" color={headingColor}>
+        Food Options
+      </Heading>
+      {shelter ? (
+        <Text lineHeight="short" color={textColor}>
+          {renderDescription()}
+        </Text>
+      ) : (
+        <SkeletonText noOfLines={2} />
+      )}
+    </VStack>
+  );
+};
+
+interface ShelterStatsProps extends BoxProps {
+  shelter: ShelterHomeQuery_shelter | undefined;
+}
+
+const ShelterStats: FC<ShelterStatsProps> = ({ shelter, ...otherProps }) => {
   const { occupancy, capacity } = shelter ?? {};
 
   const headingColor = useColorModeValue("gray.800", "gray.200");
-  const labelColor = useColorModeValue("blue.600", "blue.300");
+  const labelColor = useColorModeValue("blue.500", "blue.300");
 
   return (
-    <VStack align="stretch" spacing={1} rounded="lg" p={4}>
+    <VStack align="stretch" spacing={1} rounded="lg" {...otherProps}>
       <Heading size="md" fontWeight="semibold" color={headingColor}>
         Occupancy
       </Heading>
@@ -214,61 +286,27 @@ const ShelterStats: FC<ShelterStatsProps> = ({ shelter }) => {
   );
 };
 
-interface ShelterStatProps {
-  occupancy: number | undefined;
-  capacity: number | undefined;
-}
-
-const ShelterStat: FC<ShelterStatProps> = ({ occupancy, capacity }) => {
-  const labelColor = useColorModeValue("gray.500", "gray.300");
-  const valueColor = useColorModeValue("blue.600", "blue.400");
-  return (
-    <StatGroup>
-      <Stat minW={12}>
-        <StatLabel color={labelColor}>Available</StatLabel>
-        {occupancy !== undefined && capacity !== undefined ? (
-          <StatNumber color={valueColor}>{capacity - occupancy}</StatNumber>
-        ) : (
-          <Skeleton>
-            <StatNumber>10</StatNumber>
-          </Skeleton>
-        )}
-      </Stat>
-      <Stat minW={12}>
-        <StatLabel color={labelColor}>Capacity</StatLabel>
-        {capacity ? (
-          <StatNumber color={valueColor}>{capacity}</StatNumber>
-        ) : (
-          <Skeleton>
-            <StatNumber>10</StatNumber>
-          </Skeleton>
-        )}
-      </Stat>
-    </StatGroup>
-  );
-};
-
-interface ShelterLinksProps {
+interface ShelterLinksProps extends BoxProps {
   shelter: ShelterHomeQuery_shelter | undefined;
 }
 
-const ShelterLinks: FC<ShelterLinksProps> = ({ shelter }) => {
+const ShelterLinks: FC<ShelterLinksProps> = ({ shelter, ...otherProps }) => {
   const { email, phone, websiteUrl } = shelter ?? {};
   const phoneNumber = useMemo(
     () => (phone ? parsePhoneNumberFromString(phone) : undefined),
     [shelter],
   );
 
-  const containerBgDark = useTransparentize("pink.200", 0.16);
+  const containerBgDark = useTransparentize("pink.200", 0.24);
   const containerBg = useColorModeValue("pink.100", containerBgDark);
   const headingColor = useColorModeValue("pink.800", "pink.200");
 
   return (
-    <VStack align="stretch" rounded="lg" p={4} bg={containerBg}>
+    <VStack align="stretch" rounded="lg" p={4} bg={containerBg} {...otherProps}>
       <Heading size="md" fontWeight="semibold" color={headingColor}>
         Quick Links
       </Heading>
-      <VStack align="stretch" spacing={1.5}>
+      <VStack align="stretch" spacing={1.5} px={2}>
         <ShelterLink
           icon={HiOutlinePhone}
           href={phone ? `tel:${phone}` : undefined}
@@ -294,7 +332,9 @@ const ShelterLinks: FC<ShelterLinksProps> = ({ shelter }) => {
   );
 };
 
-interface ShelterLinkProps extends Pick<LinkProps, "href" | "target" | "rel"> {
+interface ShelterLinkProps
+  extends BoxProps,
+    Pick<LinkProps, "href" | "target" | "rel"> {
   icon: IconType;
   children: string | null | undefined;
 }
@@ -305,6 +345,7 @@ const ShelterLink: FC<ShelterLinkProps> = ({
   target,
   rel,
   children,
+  ...otherProps
 }) => {
   const iconColor = useColorModeValue("pink.500", "pink.300");
   const linkBg = useColorModeValue("white", "gray.800");
@@ -312,7 +353,7 @@ const ShelterLink: FC<ShelterLinkProps> = ({
 
   if (children === null) return null;
   return (
-    <HStack>
+    <HStack {...otherProps}>
       <Icon as={icon} boxSize={5} color={iconColor} />
       <Skeleton isLoaded={!!children}>
         <Box rounded="md" px={2} py={0.5} bg={linkBg}>
@@ -328,6 +369,15 @@ const ShelterLink: FC<ShelterLinkProps> = ({
     </HStack>
   );
 };
+
+// interface ShelterMapProps extends BoxProps {
+//   shelter: ShelterHomeQuery_shelter | undefined;
+// }
+
+// const ShelterMap: FC<ShelterMapProps> = ({ shelter, ...otherProps }) => {
+//   const { location } = shelter ?? {};
+//   return <Map>{}</Map>;
+// };
 
 const SHELTER_META_QUERY = gql`
   query ShelterMetaQuery($slug: String!) {

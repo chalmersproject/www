@@ -1,7 +1,6 @@
-import { sleep } from "utils/time";
 import { gql } from "@apollo/client";
 
-import { ApolloClient, useApolloClient } from "services/apollo";
+import { useApolloClient, ApolloClient } from "services/apollo";
 import { useFirebaseLogin, useFirebaseLogout } from "services/firebase";
 
 import { AuthViewerQuery, AuthViewerQuery_viewer } from "schema";

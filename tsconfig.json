@@ -10,6 +10,7 @@
       "services": ["./services"],
       "components": ["./components"]
     },
+    "typeRoots": ["./typings"],
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,

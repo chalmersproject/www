@@ -273,6 +273,71 @@ export interface HomeQuery {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: MapQuery
+// ====================================================
+
+export interface MapQuery_shelters {
+  __typename: "Shelter";
+  id: string;
+  location: any;
+}
+
+export interface MapQuery {
+  /**
+   * List all registered `Shelter`s.
+   */
+  shelters: MapQuery_shelters[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: ShelterPopupQuery
+// ====================================================
+
+export interface ShelterPopupQuery_shelter_occupancy {
+  __typename: "ShelterSpace";
+  beds: number;
+  spots: number;
+}
+
+export interface ShelterPopupQuery_shelter_capacity {
+  __typename: "ShelterSpace";
+  beds: number;
+  spots: number;
+}
+
+export interface ShelterPopupQuery_shelter {
+  __typename: "Shelter";
+  id: string;
+  name: string;
+  slug: string;
+  tags: ShelterTag[];
+  about: string | null;
+  occupancy: ShelterPopupQuery_shelter_occupancy;
+  capacity: ShelterPopupQuery_shelter_capacity;
+}
+
+export interface ShelterPopupQuery {
+  /**
+   * Get a `Shelter` by its `ID`.
+   */
+  shelter: ShelterPopupQuery_shelter | null;
+}
+
+export interface ShelterPopupQueryVariables {
+  shelterId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: ShelterHomeQuery
 // ====================================================
 
@@ -304,6 +369,7 @@ export interface ShelterHomeQuery_shelter {
   phone: string;
   websiteUrl: string | null;
   location: any;
+  food: ShelterFood;
   occupancy: ShelterHomeQuery_shelter_occupancy;
   capacity: ShelterHomeQuery_shelter_capacity;
   slug: string;
