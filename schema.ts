@@ -30,7 +30,7 @@ export interface HeaderQuery {
 // GraphQL mutation operation: CreateShelterMutation
 // ====================================================
 
-export interface CreateShelterMutation_createShelter_shelter_address {
+export interface CreateShelterMutation_payload_shelter_address {
   __typename: "Address";
   line1: string;
   line2: string | null;
@@ -40,19 +40,19 @@ export interface CreateShelterMutation_createShelter_shelter_address {
   postcode: string;
 }
 
-export interface CreateShelterMutation_createShelter_shelter_capacity {
+export interface CreateShelterMutation_payload_shelter_capacity {
   __typename: "ShelterSpace";
   spots: number;
   beds: number;
 }
 
-export interface CreateShelterMutation_createShelter_shelter_occupancy {
+export interface CreateShelterMutation_payload_shelter_occupancy {
   __typename: "ShelterSpace";
   spots: number;
   beds: number;
 }
 
-export interface CreateShelterMutation_createShelter_shelter {
+export interface CreateShelterMutation_payload_shelter {
   __typename: "Shelter";
   id: string;
   slug: string;
@@ -62,24 +62,24 @@ export interface CreateShelterMutation_createShelter_shelter {
   email: string | null;
   phone: string;
   websiteUrl: string | null;
-  address: CreateShelterMutation_createShelter_shelter_address;
+  address: CreateShelterMutation_payload_shelter_address;
   location: any;
-  capacity: CreateShelterMutation_createShelter_shelter_capacity;
-  occupancy: CreateShelterMutation_createShelter_shelter_occupancy;
+  capacity: CreateShelterMutation_payload_shelter_capacity;
+  occupancy: CreateShelterMutation_payload_shelter_occupancy;
   food: ShelterFood;
   tags: ShelterTag[];
 }
 
-export interface CreateShelterMutation_createShelter {
+export interface CreateShelterMutation_payload {
   __typename: "CreateShelterPayload";
-  shelter: CreateShelterMutation_createShelter_shelter;
+  shelter: CreateShelterMutation_payload_shelter;
 }
 
 export interface CreateShelterMutation {
   /**
    * Register a new `Shelter`.
    */
-  createShelter: CreateShelterMutation_createShelter;
+  payload: CreateShelterMutation_payload;
 }
 
 export interface CreateShelterMutationVariables {
@@ -95,7 +95,7 @@ export interface CreateShelterMutationVariables {
 // GraphQL mutation operation: UpdateShelterMutation
 // ====================================================
 
-export interface UpdateShelterMutation_updateShelter_shelter_address {
+export interface UpdateShelterMutation_payload_shelter_address {
   __typename: "Address";
   line1: string;
   line2: string | null;
@@ -105,19 +105,19 @@ export interface UpdateShelterMutation_updateShelter_shelter_address {
   postcode: string;
 }
 
-export interface UpdateShelterMutation_updateShelter_shelter_capacity {
+export interface UpdateShelterMutation_payload_shelter_capacity {
   __typename: "ShelterSpace";
   spots: number;
   beds: number;
 }
 
-export interface UpdateShelterMutation_updateShelter_shelter_occupancy {
+export interface UpdateShelterMutation_payload_shelter_occupancy {
   __typename: "ShelterSpace";
   spots: number;
   beds: number;
 }
 
-export interface UpdateShelterMutation_updateShelter_shelter {
+export interface UpdateShelterMutation_payload_shelter {
   __typename: "Shelter";
   id: string;
   slug: string;
@@ -127,24 +127,24 @@ export interface UpdateShelterMutation_updateShelter_shelter {
   email: string | null;
   phone: string;
   websiteUrl: string | null;
-  address: UpdateShelterMutation_updateShelter_shelter_address;
+  address: UpdateShelterMutation_payload_shelter_address;
   location: any;
-  capacity: UpdateShelterMutation_updateShelter_shelter_capacity;
-  occupancy: UpdateShelterMutation_updateShelter_shelter_occupancy;
+  capacity: UpdateShelterMutation_payload_shelter_capacity;
+  occupancy: UpdateShelterMutation_payload_shelter_occupancy;
   food: ShelterFood;
   tags: ShelterTag[];
 }
 
-export interface UpdateShelterMutation_updateShelter {
+export interface UpdateShelterMutation_payload {
   __typename: "UpdateShelterPayload";
-  shelter: UpdateShelterMutation_updateShelter_shelter;
+  shelter: UpdateShelterMutation_payload_shelter;
 }
 
 export interface UpdateShelterMutation {
   /**
    * Update a `Shelter`'s details.
    */
-  updateShelter: UpdateShelterMutation_updateShelter;
+  payload: UpdateShelterMutation_payload;
 }
 
 export interface UpdateShelterMutationVariables {
@@ -164,7 +164,7 @@ export interface DeleteShelterMutation {
   /**
    * Delete a `Shelter`.
    */
-  deleteShelter: boolean;
+  payload: boolean;
 }
 
 export interface DeleteShelterMutationVariables {
@@ -177,10 +177,10 @@ export interface DeleteShelterMutationVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: ShelterFormQuery
+// GraphQL query operation: ShelterEditorQuery
 // ====================================================
 
-export interface ShelterFormQuery_shelter_address {
+export interface ShelterEditorQuery_shelter_address {
   __typename: "Address";
   line1: string;
   line2: string | null;
@@ -190,19 +190,19 @@ export interface ShelterFormQuery_shelter_address {
   postcode: string;
 }
 
-export interface ShelterFormQuery_shelter_capacity {
+export interface ShelterEditorQuery_shelter_capacity {
   __typename: "ShelterSpace";
   spots: number;
   beds: number;
 }
 
-export interface ShelterFormQuery_shelter_occupancy {
+export interface ShelterEditorQuery_shelter_occupancy {
   __typename: "ShelterSpace";
   spots: number;
   beds: number;
 }
 
-export interface ShelterFormQuery_shelter {
+export interface ShelterEditorQuery_shelter {
   __typename: "Shelter";
   id: string;
   name: string;
@@ -211,23 +211,191 @@ export interface ShelterFormQuery_shelter {
   email: string | null;
   phone: string;
   websiteUrl: string | null;
-  address: ShelterFormQuery_shelter_address;
+  address: ShelterEditorQuery_shelter_address;
   location: any;
-  capacity: ShelterFormQuery_shelter_capacity;
-  occupancy: ShelterFormQuery_shelter_occupancy;
+  capacity: ShelterEditorQuery_shelter_capacity;
+  occupancy: ShelterEditorQuery_shelter_occupancy;
   food: ShelterFood;
   tags: ShelterTag[];
 }
 
-export interface ShelterFormQuery {
+export interface ShelterEditorQuery {
   /**
    * Get a `Shelter` by its `ID`.
    */
-  shelter: ShelterFormQuery_shelter | null;
+  shelter: ShelterEditorQuery_shelter | null;
 }
 
-export interface ShelterFormQueryVariables {
+export interface ShelterEditorQueryVariables {
   id: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: CreateSignalMutation
+// ====================================================
+
+export interface CreateSignalMutation_payload_signal_shelter_signals {
+  __typename: "Signal";
+  id: string;
+}
+
+export interface CreateSignalMutation_payload_signal_shelter {
+  __typename: "Shelter";
+  id: string;
+  signals: CreateSignalMutation_payload_signal_shelter_signals[];
+}
+
+export interface CreateSignalMutation_payload_signal {
+  __typename: "Signal";
+  id: string;
+  name: string;
+  slug: string;
+  measure: ShelterMeasure;
+  value: number | null;
+  shelter: CreateSignalMutation_payload_signal_shelter;
+}
+
+export interface CreateSignalMutation_payload {
+  __typename: "CreateSignalPayload";
+  signal: CreateSignalMutation_payload_signal;
+}
+
+export interface CreateSignalMutation {
+  /**
+   * Register a new `Signal`.
+   */
+  payload: CreateSignalMutation_payload;
+}
+
+export interface CreateSignalMutationVariables {
+  input: CreateSignalInput;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: DeleteSignalMutation
+// ====================================================
+
+export interface DeleteSignalMutation_payload_shelter_signals {
+  __typename: "Signal";
+  id: string;
+}
+
+export interface DeleteSignalMutation_payload_shelter {
+  __typename: "Shelter";
+  id: string;
+  signals: DeleteSignalMutation_payload_shelter_signals[];
+}
+
+export interface DeleteSignalMutation_payload {
+  __typename: "DeleteSignalPayload";
+  shelter: DeleteSignalMutation_payload_shelter;
+}
+
+export interface DeleteSignalMutation {
+  /**
+   * Delete a `Signal`.
+   */
+  payload: DeleteSignalMutation_payload;
+}
+
+export interface DeleteSignalMutationVariables {
+  input: DeleteSignalInput;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: SignalEditorQuery
+// ====================================================
+
+export interface SignalEditorQuery_signal_shelter {
+  __typename: "Shelter";
+  id: string;
+}
+
+export interface SignalEditorQuery_signal {
+  __typename: "Signal";
+  id: string;
+  name: string;
+  measure: ShelterMeasure;
+  shelter: SignalEditorQuery_signal_shelter;
+}
+
+export interface SignalEditorQuery {
+  /**
+   * Get a `Signal` by its `ID`.
+   */
+  signal: SignalEditorQuery_signal | null;
+}
+
+export interface SignalEditorQueryVariables {
+  id: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: SignalInfoQuery
+// ====================================================
+
+export interface SignalInfoQuery_signal_measurements_occupancy {
+  __typename: "ShelterSpace";
+  beds: number;
+  spots: number;
+}
+
+export interface SignalInfoQuery_signal_measurements {
+  __typename: "ShelterMeasurement";
+  id: string;
+  occupancy: SignalInfoQuery_signal_measurements_occupancy;
+  timestamp: any;
+}
+
+export interface SignalInfoQuery_signal {
+  __typename: "Signal";
+  id: string;
+  secret: string | null;
+  name: string;
+  measure: ShelterMeasure;
+  value: number | null;
+  measurements: SignalInfoQuery_signal_measurements[];
+}
+
+export interface SignalInfoQuery_viewer {
+  __typename: "User";
+  id: string;
+  isAdmin: boolean;
+}
+
+export interface SignalInfoQuery {
+  /**
+   * Get a `Signal` by its `ID`.
+   */
+  signal: SignalInfoQuery_signal | null;
+  /**
+   * Get the currently authenticated `User`.
+   */
+  viewer: SignalInfoQuery_viewer | null;
+}
+
+export interface SignalInfoQueryVariables {
+  signalId: string;
 }
 
 /* tslint:disable */
@@ -359,6 +527,28 @@ export interface ShelterHomeQuery_shelter_capacity {
   spots: number;
 }
 
+export interface ShelterHomeQuery_shelter_signals_shelter {
+  __typename: "Shelter";
+  id: string;
+  name: string;
+}
+
+export interface ShelterHomeQuery_shelter_signals_measurements {
+  __typename: "ShelterMeasurement";
+  id: string;
+  timestamp: any;
+}
+
+export interface ShelterHomeQuery_shelter_signals {
+  __typename: "Signal";
+  id: string;
+  name: string;
+  slug: string;
+  measure: ShelterMeasure;
+  shelter: ShelterHomeQuery_shelter_signals_shelter;
+  measurements: ShelterHomeQuery_shelter_signals_measurements[];
+}
+
 export interface ShelterHomeQuery_shelter {
   __typename: "Shelter";
   id: string;
@@ -372,6 +562,7 @@ export interface ShelterHomeQuery_shelter {
   food: ShelterFood;
   occupancy: ShelterHomeQuery_shelter_occupancy;
   capacity: ShelterHomeQuery_shelter_capacity;
+  signals: ShelterHomeQuery_shelter_signals[];
   slug: string;
   tags: ShelterTag[];
 }
@@ -589,17 +780,11 @@ export interface ShelterCrumb_shelter {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL fragment: ShelterList_shelter
+// GraphQL fragment: ShelterTags_shelter
 // ====================================================
 
-export interface ShelterList_shelter {
+export interface ShelterTags_shelter {
   __typename: "Shelter";
-  id: string;
-  name: string;
-  slug: string;
-  about: string | null;
-  imageUrl: string | null;
-  food: ShelterFood;
   tags: ShelterTag[];
 }
 
@@ -609,12 +794,29 @@ export interface ShelterList_shelter {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL fragment: ShelterTags_shelter
+// GraphQL fragment: SignalCard_signal
 // ====================================================
 
-export interface ShelterTags_shelter {
+export interface SignalCard_signal_shelter {
   __typename: "Shelter";
-  tags: ShelterTag[];
+  id: string;
+  name: string;
+}
+
+export interface SignalCard_signal_measurements {
+  __typename: "ShelterMeasurement";
+  id: string;
+  timestamp: any;
+}
+
+export interface SignalCard_signal {
+  __typename: "Signal";
+  id: string;
+  name: string;
+  slug: string;
+  measure: ShelterMeasure;
+  shelter: SignalCard_signal_shelter;
+  measurements: SignalCard_signal_measurements[];
 }
 
 /* tslint:disable */
@@ -630,6 +832,11 @@ export enum ShelterFood {
   MEALS = "MEALS",
   NONE = "NONE",
   SNACKS = "SNACKS",
+}
+
+export enum ShelterMeasure {
+  BEDS = "BEDS",
+  SPOTS = "SPOTS",
 }
 
 export enum ShelterTag {
@@ -665,6 +872,12 @@ export interface CreateShelterInput {
   tags: ShelterTag[];
 }
 
+export interface CreateSignalInput {
+  name: string;
+  shelterId: string;
+  measure: ShelterMeasure;
+}
+
 export interface CreateUserInput {
   firstName: string;
   lastName: string;
@@ -674,6 +887,10 @@ export interface CreateUserInput {
 
 export interface DeleteShelterInput {
   shelterId: string;
+}
+
+export interface DeleteSignalInput {
+  signalId: string;
 }
 
 export interface ShelterSpaceInput {

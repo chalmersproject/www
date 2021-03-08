@@ -1,13 +1,16 @@
-import React, { FC, ReactNode, useMemo } from "react";
+import React, { FC, ReactNode, useMemo, useState } from "react";
+import isEmpty from "lodash/isEmpty";
+
+import { getServerClient } from "services/apollo";
+import { parsePhoneNumberFromString } from "libphonenumber-js";
+import { GetServerSideProps } from "next";
+import { ParsedUrlQuery } from "querystring";
+
 import { useRouter } from "next/router";
 import { useQuery, gql } from "@apollo/client";
+import { usePlaceholders } from "utils/placeholder";
 
-import { parsePhoneNumberFromString } from "libphonenumber-js";
-
-import { ParsedUrlQuery } from "querystring";
-import { GetServerSideProps } from "next";
-import { getServerClient } from "services/apollo";
-
+import { IconType } from "react-icons";
 import {
   HiOutlineLink,
   HiOutlineMail,
@@ -15,41 +18,43 @@ import {
   HiOutlinePhone,
 } from "react-icons/hi";
 
-import { IconType } from "react-icons";
+import { Map, Layer, Feature } from "components/mapbox";
+import { SymbolLayout, SymbolPaint } from "mapbox-gl";
 
-import {
-  Box,
-  Container,
-  HStack,
-  VStack,
-  SimpleGrid,
-  SkeletonText,
-  BoxProps,
-} from "@chakra-ui/react";
-
-import { Skeleton } from "@chakra-ui/react";
+import { Box, BoxProps, Container, HStack, VStack } from "@chakra-ui/react";
+import { SimpleGrid } from "@chakra-ui/react";
+import { Button } from "@chakra-ui/react";
+import { Skeleton, SkeletonText } from "@chakra-ui/react";
 import { Heading, Text, Link, LinkProps } from "@chakra-ui/react";
 import { Image } from "@chakra-ui/react";
 import { Icon, IconButton } from "@chakra-ui/react";
 import { Fade } from "@chakra-ui/react";
-import { useBreakpointValue, useColorModeValue } from "@chakra-ui/react";
+import { useColorModeValue, useToken } from "@chakra-ui/react";
+import { useBreakpointValue } from "@chakra-ui/react";
 import { useTransparentize } from "utils/theme";
 
 import { Layout } from "components/layout";
 import { HomeCrumb } from "components/shelters-crumb";
+import { Geocoder, GeolocateControl } from "components/mapbox";
+
+import { EmptyPlaceholder } from "components/placeholder";
 import { ShelterStat } from "components/shelter-stat";
-import { ShelterForm } from "components/shelter-form";
 import { ShelterTags } from "components/shelter-tags";
 import { ShelterCrumb } from "components/shelter-crumb";
+import { ShelterEditor } from "components/shelter-editor";
+import { SignalCard } from "components/signal-card";
+import { SignalEditor } from "components/signal-editor";
 
 import { SHELTER_CRUMB_FRAGMENTS } from "components/shelter-crumb";
 import { SHELTER_TAGS_FRAGMENTS } from "components/shelter-tags";
+import { SIGNAL_CARD_FRAGMENTS } from "components/signal-card";
 
 import {
   ShelterFood,
   ShelterHomeQuery,
   ShelterHomeQueryVariables,
   ShelterHomeQuery_shelter,
+  ShelterHomeQuery_viewer,
 } from "schema";
 
 import {
@@ -57,6 +62,7 @@ import {
   ShelterMetaQuery,
   ShelterMetaQueryVariables,
 } from "schema";
+import { SignalInfo } from "components/signal-info";
 
 export interface ShelterHomeQueryParams extends ParsedUrlQuery {
   slug: string;
@@ -92,6 +98,10 @@ export const SHELTER_ADMIN_QUERY = gql`
         beds
         spots
       }
+      signals {
+        id
+        ...SignalCard_signal
+      }
       ...ShelterCrumb_shelter
       ...ShelterTags_shelter
     }
@@ -99,6 +109,7 @@ export const SHELTER_ADMIN_QUERY = gql`
 
   ${SHELTER_CRUMB_FRAGMENTS}
   ${SHELTER_TAGS_FRAGMENTS}
+  ${SIGNAL_CARD_FRAGMENTS}
 `;
 
 const Shelter: FC<ShelterProps> = ({ slug, url, shelter: shelterMeta }) => {
@@ -140,51 +151,55 @@ const Shelter: FC<ShelterProps> = ({ slug, url, shelter: shelterMeta }) => {
         </>
       }
     >
-      <VStack as={Container} align="stretch" spacing={6}>
-        {imageUrl !== null && (
-          <Box h={[60, 80, 96]} rounded="lg" overflow="hidden">
-            <Image
-              src={imageUrl}
-              alt={name}
-              fit="cover"
-              fallback={<Skeleton boxSize="full" />}
-              boxSize="full"
-            />
-          </Box>
-        )}
-        <VStack align="stretch">
-          <HStack align="start">
-            <VStack align="stretch" spacing={1} flex={1}>
-              <Heading size="lg">{name}</Heading>
-              <ShelterTags shelter={shelter} />
-            </VStack>
-            <Fade in={isAdmin}>
-              <ShelterForm
-                shelterId={shelterId}
-                onDelete={() => router.replace("/")}
-                p={[1, 2]}
-              >
-                {({ onOpen }) => (
-                  <IconButton
-                    icon={<Icon as={HiOutlinePencil} boxSize={[4, 5]} />}
-                    aria-label="Edit"
-                    size={editButtonSize}
-                    colorScheme="pink"
-                    onClick={onOpen}
-                    isRound
-                  />
-                )}
-              </ShelterForm>
-            </Fade>
-          </HStack>
-          <Text lineHeight="short" color={textColor}>
-            {about}
-          </Text>
+      <Container>
+        <VStack align="stretch" spacing={6}>
+          {imageUrl !== null && (
+            <Box h={[60, 80, 96]} rounded="lg" overflow="hidden">
+              <Image
+                src={imageUrl}
+                alt={name}
+                fit="cover"
+                fallback={<Skeleton boxSize="full" />}
+                boxSize="full"
+              />
+            </Box>
+          )}
+          <VStack align="stretch">
+            <HStack align="start">
+              <VStack align="stretch" spacing={1} flex={1}>
+                <Heading size="lg">{name}</Heading>
+                <ShelterTags shelter={shelter} />
+              </VStack>
+              <Fade in={isAdmin}>
+                <ShelterEditor
+                  shelterId={shelterId}
+                  onDelete={() => router.replace("/")}
+                  p={[1, 2]}
+                >
+                  {({ onOpen }) => (
+                    <IconButton
+                      icon={<Icon as={HiOutlinePencil} boxSize={[4, 5]} />}
+                      aria-label="Edit"
+                      size={editButtonSize}
+                      colorScheme="pink"
+                      onClick={onOpen}
+                      isRound
+                    />
+                  )}
+                </ShelterEditor>
+              </Fade>
+            </HStack>
+            <Text lineHeight="short" color={textColor}>
+              {about}
+            </Text>
+          </VStack>
+          <ShelterLinks shelter={shelter} />
+          <ShelterFoodOptions shelter={shelter} />
+          <ShelterStats shelter={shelter} />
+          <ShelterMap shelter={shelter} />
+          <ShelterSignals shelter={shelter} viewer={viewer} />
         </VStack>
-        <ShelterFoodOptions shelter={shelter} />
-        <ShelterStats shelter={shelter} />
-        <ShelterLinks shelter={shelter} />
-      </VStack>
+      </Container>
     </Layout>
   );
 };
@@ -215,6 +230,7 @@ const ShelterFoodOptions: FC<ShelterFoodOptionsProps> = ({ shelter }) => {
           </>
         );
       case ShelterFood.MEALS:
+        // TODO: Define what "full meals" are.
         return (
           <>
             <Text as="span" fontWeight={highlightWeight} color={highlightColor}>
@@ -370,14 +386,107 @@ const ShelterLink: FC<ShelterLinkProps> = ({
   );
 };
 
-// interface ShelterMapProps extends BoxProps {
-//   shelter: ShelterHomeQuery_shelter | undefined;
-// }
+interface ShelterMapProps extends BoxProps {
+  shelter: ShelterHomeQuery_shelter | undefined;
+}
 
-// const ShelterMap: FC<ShelterMapProps> = ({ shelter, ...otherProps }) => {
-//   const { location } = shelter ?? {};
-//   return <Map>{}</Map>;
-// };
+const SHELTER_MAP_ZOOM: [number] = [14];
+
+const ShelterMap: FC<ShelterMapProps> = ({ shelter, ...otherProps }) => {
+  const [, setIsStyleLoaded] = useState(false); // TODO: Figure out why this is necessary for markers to show up.
+  const { location } = shelter ?? {};
+
+  const symbolLayout: SymbolLayout = {
+    "icon-image": "marker",
+    "icon-anchor": "bottom",
+    "icon-size": 0.25,
+  };
+  const symbolColor = useToken("colors", "red.500");
+  const symbolPaint: SymbolPaint = { "icon-color": symbolColor };
+
+  return (
+    <VStack align="stretch" rounded="lg" {...otherProps}>
+      <Heading size="md" fontWeight="semibold">
+        Location
+      </Heading>
+      <Box overflow="hidden" rounded="md" h={72}>
+        <Map
+          style="mapbox://styles/mapbox/streets-v11"
+          containerStyle={{ width: "100%", height: "100%" }}
+          zoom={SHELTER_MAP_ZOOM}
+          center={location}
+          movingMethod="jumpTo"
+          onStyleLoad={map =>
+            map.loadImage("/assets/marker.png", (error, result) => {
+              if (error) {
+                console.error("Failed to load map icons", error);
+                return;
+              }
+              if (result) {
+                map.addImage("marker", result, { sdf: true });
+                setIsStyleLoaded(true);
+                return;
+              }
+            })
+          }
+        >
+          <Geocoder />
+          <GeolocateControl />
+          <Layer type="symbol" layout={symbolLayout} paint={symbolPaint}>
+            <Feature coordinates={location} />
+          </Layer>
+        </Map>
+      </Box>
+    </VStack>
+  );
+};
+
+interface ShelterSignalsProps extends BoxProps {
+  shelter: ShelterHomeQuery_shelter | undefined;
+  viewer: ShelterHomeQuery_viewer | null | undefined;
+}
+
+const ShelterSignals: FC<ShelterSignalsProps> = ({
+  shelter,
+  viewer,
+  ...otherProps
+}) => {
+  const { id: shelterId, signals } = shelter ?? {};
+  const { isAdmin } = viewer ?? {};
+  const signalsWithPlaceholders = usePlaceholders(signals, 2);
+  return (
+    <VStack align="stretch" rounded="lg" {...otherProps}>
+      <Heading size="md" fontWeight="semibold">
+        Signals
+      </Heading>
+      <VStack align="stretch">
+        {!isEmpty(signalsWithPlaceholders) ? (
+          signalsWithPlaceholders.map((signal, index) => {
+            const { id: signalId } = signal ?? {};
+            return (
+              <SignalInfo key={signalId ?? index} signalId={signalId}>
+                {({ onOpen }) => (
+                  <SignalCard signal={signal} onClick={onOpen} />
+                )}
+              </SignalInfo>
+            );
+          })
+        ) : (
+          <EmptyPlaceholder>No signals registered.</EmptyPlaceholder>
+        )}
+      </VStack>
+      {isAdmin && (
+        <SignalEditor shelterId={shelterId}>
+          {({ onOpen }) => (
+            <Button onClick={onOpen} colorScheme="pink">
+              New Signal
+            </Button>
+          )}
+        </SignalEditor>
+      )}
+    </VStack>
+  );
+};
 
 const SHELTER_META_QUERY = gql`
   query ShelterMetaQuery($slug: String!) {

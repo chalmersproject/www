@@ -1,52 +1,52 @@
 import React, { FC } from "react";
 import NextLink from "next/link";
+
 import { gql } from "@apollo/client";
 
 import { Box, BoxProps, HStack, VStack } from "@chakra-ui/react";
 import { Skeleton, SkeletonText } from "@chakra-ui/react";
 import { Text, LinkOverlay, LinkBox } from "@chakra-ui/react";
-import { Image } from "@chakra-ui/react";
 import { useColorModeValue, useBreakpointValue } from "@chakra-ui/react";
 
-import { ShelterTags } from "components/shelter-tags";
-import { SHELTER_TAGS_FRAGMENTS } from "components/shelter-tags";
+import { ShelterMeasure, SignalCard_signal } from "schema";
 
-import { ShelterCard_shelter } from "schema";
-
-export const SHELTER_CARD_FRAGMENTS = gql`
-  fragment ShelterCard_shelter on Shelter {
+export const SIGNAL_CARD_FRAGMENTS = gql`
+  fragment SignalCard_signal on Signal {
     id
     name
     slug
-    about
-    imageUrl
-    food
-    ...ShelterTags_shelter
+    measure
+    shelter {
+      id
+      name
+    }
+    measurements(limit: 1) {
+      id
+      timestamp
+    }
   }
-
-  ${SHELTER_TAGS_FRAGMENTS}
 `;
 
-export interface ShelterCardProps extends Omit<BoxProps, "onClick"> {
-  readonly shelter: ShelterCard_shelter | undefined;
+export interface SignalCardProps extends Omit<BoxProps, "onClick"> {
+  readonly signal: SignalCard_signal | undefined;
   readonly href?: string;
-  readonly onClick?: (shelter: ShelterCard_shelter) => void;
+  readonly onClick?: (signal: SignalCard_signal) => void;
 }
 
-export const ShelterCard: FC<ShelterCardProps> = ({
-  shelter,
+export const SignalCard: FC<SignalCardProps> = ({
+  signal,
   href,
   onClick,
   ...otherProps
 }) => {
-  const { name, about, imageUrl } = shelter ?? {};
+  const { name, measure, shelter, measurements } = signal ?? {};
 
   const cardBg = useColorModeValue("gray.100", "gray.700");
   const cardHoverBg = useColorModeValue("blue.50", "gray.600");
 
   const nameColor = useColorModeValue("gray.900", "gray.100");
+  const spanColor = useColorModeValue("gray.600", "gray.300");
   const aboutColor = useColorModeValue("gray.500", "gray.400");
-  const imageShown = useBreakpointValue([false, true]);
 
   const renderName = () => {
     if (!name) {
@@ -72,16 +72,20 @@ export const ShelterCard: FC<ShelterCardProps> = ({
   };
 
   const renderAbout = () => {
-    if (!about) {
+    if (!signal || !shelter) {
       return (
         <Box py={1}>
-          <SkeletonText spacing={2} />
+          <SkeletonText noOfLines={1} />
         </Box>
       );
     }
     return (
-      <Text noOfLines={3} fontSize="base" color={aboutColor}>
-        {about}
+      <Text color={aboutColor}>
+        This signal tracks the{" "}
+        <Text as="span" fontWeight="medium" color={spanColor}>
+          {measure === ShelterMeasure.BEDS ? "number of beds" : "heacount"}
+        </Text>{" "}
+        at {shelter.name}.
       </Text>
     );
   };
@@ -90,39 +94,24 @@ export const ShelterCard: FC<ShelterCardProps> = ({
     <LinkBox
       href={href}
       onClick={() => {
-        if (onClick && shelter) {
-          onClick(shelter);
+        if (onClick && signal) {
+          onClick(signal);
         }
       }}
       rounded="lg"
+      cursor={onClick ? "pointer" : undefined}
       p={4}
       bg={cardBg}
       transition="background-color"
       transitionTimingFunction="ease-in-out"
       transitionDuration="normal"
-      _hover={{ bg: cardHoverBg }}
+      _hover={onClick ? { bg: cardHoverBg } : undefined}
       {...otherProps}
     >
-      <HStack spacing={3}>
-        <VStack align="stretch" flex={1}>
-          <VStack align="stretch" spacing={shelter ? 0 : 2}>
-            {renderName()}
-            {renderAbout()}
-          </VStack>
-          <ShelterTags shelter={shelter} />
-        </VStack>
-        {imageUrl !== null && imageShown && (
-          <Box boxSize={32} rounded="md" overflow="hidden">
-            <Image
-              src={imageUrl}
-              alt={name}
-              fit="cover"
-              fallback={<Skeleton boxSize="full" />}
-              boxSize="full"
-            />
-          </Box>
-        )}
-      </HStack>
+      <VStack align="stretch" spacing={signal ? 0 : 1}>
+        {renderName()}
+        {renderAbout()}
+      </VStack>
     </LinkBox>
   );
 };

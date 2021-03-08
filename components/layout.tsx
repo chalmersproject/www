@@ -9,6 +9,7 @@ import { PageURL, PageURLProps } from "components/meta";
 import { PageType, PageTypeProps } from "components/meta";
 
 import { Header, HeaderProps } from "components/header";
+import { PageProgress } from "components/progress";
 
 export interface LayoutProps
   extends BoxProps,
@@ -45,6 +46,7 @@ export const Layout: FC<LayoutProps> = ({
       </Box>
       <Footer />
     </Flex>
+    <PageProgress />
   </>
 );
 

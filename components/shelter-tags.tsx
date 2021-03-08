@@ -1,7 +1,8 @@
-import React, { FC, useMemo } from "react";
+import React, { FC } from "react";
 import isEmpty from "lodash/isEmpty";
-import { fill } from "utils/placeholder";
+
 import { gql } from "@apollo/client";
+import { usePlaceholders } from "utils/placeholder";
 
 import { BoxProps } from "@chakra-ui/react";
 import { Skeleton } from "@chakra-ui/react";
@@ -24,18 +25,14 @@ export const ShelterTags: FC<ShelterTagsProps> = ({
   shelter,
   ...otherProps
 }) => {
-  const items = useMemo(() => {
-    const { tags } = shelter ?? {};
-    const sorted = tags ? [...tags].sort() : undefined;
-    return fill(sorted, 3);
-  }, [shelter]);
-
-  if (isEmpty(items)) {
+  const { tags } = shelter ?? {};
+  const tagsWithPlaceholders = usePlaceholders(tags, 3);
+  if (isEmpty(tagsWithPlaceholders)) {
     return null;
   }
   return (
     <Wrap spacing={1.5} {...otherProps}>
-      {items.map((tag, index) => (
+      {tagsWithPlaceholders.map((tag, index) => (
         <WrapItem key={tag ?? index}>
           {tag ? (
             <Tag colorScheme="blue">{tag}</Tag>

@@ -1,6 +1,4 @@
-export function fill<T>(
+export const usePlaceholders = <T>(
   array: T[] | undefined,
   count: number,
-): (T | undefined)[] {
-  return array || [...new Array(count)];
-}
+): (T | undefined)[] => array || [...new Array(count)];
