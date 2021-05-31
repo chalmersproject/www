@@ -63,7 +63,7 @@ const Map: FC = () => {
   return (
     <_Map
       containerStyle={{ width: "100vw", height: "100vh" }}
-      style="mapbox://styles/mapbox/streets-v11"
+      style="mapbox://styles/mapbox/dark-v10"
       zoom={MAP_ZOOM}
       center={MAP_CENTER}
       onClick={() => setSelectedShelterIndex(null)}
