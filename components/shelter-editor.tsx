@@ -2,8 +2,8 @@ import React, { FC, ReactNode } from "react";
 import { call } from "utils/function";
 import { formatError } from "utils/error";
 import { validate as isValidEmail } from "email-validator";
-import { isValidNumber as isValidPhone } from "libphonenumber-js";
 import { validateURL, validateNumber, handleNumberInput } from "utils/input";
+import { parsePhoneNumberWithError as parsePhone } from "libphonenumber-js";
 
 import { useQuery, useMutation, gql } from "@apollo/client";
 import { useForm } from "react-hook-form";
@@ -397,7 +397,14 @@ export const ShelterEditor: FC<ShelterEditorProps> = ({
           <Input
             ref={register({
               required: true,
-              validate: value => isValidPhone(value) || "Invalid phone number.",
+              validate: (value: string) => {
+                try {
+                  const phone = parsePhone(value, "CA");
+                  return phone.isValid() || "Invalid phone number.";
+                } catch (error) {
+                  return `Invalid phone number: ${error.message}`;
+                }
+              },
             })}
             name="phone"
             type="tel"
