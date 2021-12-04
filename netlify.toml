@@ -9,7 +9,7 @@ package = "netlify-plugin-cache-nextjs"
 # Proxy GraphQL API requests.
 [[redirects]]
 from = "/api/graphql"
-to = "https://api.chalmersproject.com/graphql"
+to = "https://api.cloud.chalmersproject.com/graphql"
 status = 200
 
 
