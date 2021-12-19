@@ -3,7 +3,14 @@ import NextLink from "next/link";
 import isEmpty from "lodash/isEmpty";
 import { gql, useQuery } from "@apollo/client";
 
-import { Box, BoxProps, VStack, HStack, Center } from "@chakra-ui/react";
+import {
+  Box,
+  BoxProps,
+  VStack,
+  HStack,
+  Center,
+  Spacer,
+} from "@chakra-ui/react";
 import { SimpleGrid } from "@chakra-ui/react";
 import { Spinner } from "@chakra-ui/react";
 import { Text, Link } from "@chakra-ui/react";
@@ -220,21 +227,25 @@ const ShelterStats: FC<ShelterStatsProps> = ({ shelter, ...otherProps }) => {
   const labelColor = useColorModeValue("blue.500", "blue.300");
 
   return (
-    <SimpleGrid
+    <HStack
       columns={2}
-      spacingX={3}
+      spacingX={5}
       spacingY={2}
       templateColumns="auto 10rem"
+      bg={"gray.200"}
+      p={"3"}
+      rounded={"md"}
       {...otherProps}
     >
       <Text fontWeight="medium" color={labelColor}>
         Spots
       </Text>
       <ShelterStat occupancy={occupancy?.spots} capacity={capacity?.spots} />
+      <Spacer />
       <Text fontWeight="medium" color={labelColor}>
         Beds
       </Text>
       <ShelterStat occupancy={occupancy?.beds} capacity={capacity?.beds} />
-    </SimpleGrid>
+    </HStack>
   );
 };
