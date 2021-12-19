@@ -1,6 +1,5 @@
 import React, { FC, RefObject } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { sleep } from "utils/time";
 
 import {
   ApolloClient as Client,

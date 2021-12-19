@@ -1,17 +1,8 @@
 import React, { FC, useMemo, useState } from "react";
 import NextLink from "next/link";
-import isEmpty from "lodash/isEmpty";
 import { gql, useQuery } from "@apollo/client";
 
-import {
-  Box,
-  BoxProps,
-  VStack,
-  HStack,
-  Center,
-  Spacer,
-} from "@chakra-ui/react";
-import { SimpleGrid } from "@chakra-ui/react";
+import { BoxProps, VStack, HStack, Center } from "@chakra-ui/react";
 import { Spinner } from "@chakra-ui/react";
 import { Text, Link } from "@chakra-ui/react";
 import { Wrap, WrapItem } from "@chakra-ui/react";
@@ -21,10 +12,9 @@ import { useToken, useColorModeValue } from "@chakra-ui/react";
 import { Map as _Map, Layer, Feature, Popup } from "components/mapbox";
 import { Geocoder, GeolocateControl } from "components/mapbox";
 import { MapMouseEvent, SymbolLayout, SymbolPaint } from "mapbox-gl";
-import { MapLayerMouseEvent } from "mapbox-gl";
 import { ShelterStat } from "components/shelter-stat";
 
-import { MapQuery, MapQuery_shelters } from "schema";
+import { MapQuery } from "schema";
 
 import {
   ShelterPopupQuery,
@@ -156,6 +146,7 @@ const ShelterPopup: FC<ShelterPopupProps> = ({ shelterId, ...otherProps }) => {
     variables: {
       shelterId,
     },
+    // pollInterval: 500,
   });
 
   const { shelter } = data ?? {};
@@ -170,6 +161,7 @@ const ShelterPopup: FC<ShelterPopupProps> = ({ shelterId, ...otherProps }) => {
       maxH={96}
       overflowY="auto"
       fontSize="md"
+      lineHeight="normal"
       {...otherProps}
     >
       {!isLoading ? (
@@ -221,31 +213,36 @@ interface ShelterStatsProps extends BoxProps {
 }
 
 const ShelterStats: FC<ShelterStatsProps> = ({ shelter, ...otherProps }) => {
-  const { occupancy, capacity } = shelter ?? {};
-
-  const headingColor = useColorModeValue("gray.800", "gray.200");
+  const { id: shelterId, occupancy, capacity } = shelter ?? {};
   const labelColor = useColorModeValue("blue.500", "blue.300");
-
   return (
     <HStack
-      columns={2}
-      spacingX={5}
-      spacingY={2}
-      templateColumns="auto 10rem"
-      bg={"gray.200"}
-      p={"3"}
-      rounded={"md"}
+      justify="space-evenly"
+      bg="gray.200"
+      p="3"
+      rounded="md"
       {...otherProps}
     >
-      <Text fontWeight="medium" color={labelColor}>
-        Spots
-      </Text>
-      <ShelterStat occupancy={occupancy?.spots} capacity={capacity?.spots} />
-      <Spacer />
-      <Text fontWeight="medium" color={labelColor}>
-        Beds
-      </Text>
-      <ShelterStat occupancy={occupancy?.beds} capacity={capacity?.beds} />
+      <HStack>
+        <Text fontWeight="medium" color={labelColor}>
+          Spots
+        </Text>
+        <ShelterStat
+          shelterId={shelterId}
+          occupancy={occupancy?.spots}
+          capacity={capacity?.spots}
+        />
+      </HStack>
+      <HStack>
+        <Text fontWeight="medium" color={labelColor}>
+          Beds
+        </Text>
+        <ShelterStat
+          shelterId={shelterId}
+          occupancy={occupancy?.beds}
+          capacity={capacity?.beds}
+        />
+      </HStack>
     </HStack>
   );
 };

@@ -21,8 +21,8 @@ import {
 import { Map, Layer, Feature } from "components/mapbox";
 import { SymbolLayout, SymbolPaint } from "mapbox-gl";
 
-import { Box, BoxProps, Container, HStack, VStack } from "@chakra-ui/react";
-import { SimpleGrid } from "@chakra-ui/react";
+import { Box, BoxProps, Container } from "@chakra-ui/react";
+import { HStack, VStack, Spacer } from "@chakra-ui/react";
 import { Button } from "@chakra-ui/react";
 import { Skeleton, SkeletonText } from "@chakra-ui/react";
 import { Heading, Text, Link, LinkProps } from "@chakra-ui/react";
@@ -273,7 +273,7 @@ interface ShelterStatsProps extends BoxProps {
 }
 
 const ShelterStats: FC<ShelterStatsProps> = ({ shelter, ...otherProps }) => {
-  const { occupancy, capacity } = shelter ?? {};
+  const { id: shelterId, occupancy, capacity } = shelter ?? {};
 
   const headingColor = useColorModeValue("gray.800", "gray.200");
   const labelColor = useColorModeValue("blue.500", "blue.300");
@@ -283,21 +283,29 @@ const ShelterStats: FC<ShelterStatsProps> = ({ shelter, ...otherProps }) => {
       <Heading size="md" fontWeight="semibold" color={headingColor}>
         Occupancy
       </Heading>
-      <SimpleGrid
-        columns={2}
-        spacingX={3}
-        spacingY={1.5}
-        templateColumns="auto 10rem"
-      >
-        <Text fontWeight="medium" color={labelColor}>
-          Spots
-        </Text>
-        <ShelterStat occupancy={occupancy?.spots} capacity={capacity?.spots} />
-        <Text fontWeight="medium" color={labelColor}>
-          Beds
-        </Text>
-        <ShelterStat occupancy={occupancy?.beds} capacity={capacity?.beds} />
-      </SimpleGrid>
+      <HStack spacing={8}>
+        <Spacer />
+        <HStack>
+          <Text fontWeight="medium" color={labelColor}>
+            Spots
+          </Text>
+          <ShelterStat
+            shelterId={shelterId}
+            occupancy={occupancy?.spots}
+            capacity={capacity?.spots}
+          />
+        </HStack>
+        <HStack>
+          <Text fontWeight="medium" color={labelColor}>
+            Beds
+          </Text>
+          <ShelterStat
+            shelterId={shelterId}
+            occupancy={occupancy?.beds}
+            capacity={capacity?.beds}
+          />
+        </HStack>
+      </HStack>
     </VStack>
   );
 };

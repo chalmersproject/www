@@ -84,7 +84,7 @@ export const SignalInfo: FC<SignalInfoProps> = ({
   );
 
   const { signal, viewer } = data ?? {};
-  const { secret, name, measure, value, measurements } = signal ?? {};
+  const { secret, name, measure, measurements } = signal ?? {};
   const { isAdmin } = viewer ?? {};
   const measurementsWithPlaceholders = usePlaceholders(measurements, 3);
 

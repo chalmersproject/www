@@ -402,7 +402,7 @@ export const ShelterEditor: FC<ShelterEditorProps> = ({
                   const phone = parsePhone(value, "CA");
                   return phone.isValid() || "Invalid phone number.";
                 } catch (error) {
-                  return `Invalid phone number: ${error.message}`;
+                  return `Invalid phone number: ${(error as Error).message}`;
                 }
               },
             })}

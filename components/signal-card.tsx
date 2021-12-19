@@ -3,10 +3,10 @@ import NextLink from "next/link";
 
 import { gql } from "@apollo/client";
 
-import { Box, BoxProps, HStack, VStack } from "@chakra-ui/react";
+import { Box, BoxProps, VStack } from "@chakra-ui/react";
 import { Skeleton, SkeletonText } from "@chakra-ui/react";
 import { Text, LinkOverlay, LinkBox } from "@chakra-ui/react";
-import { useColorModeValue, useBreakpointValue } from "@chakra-ui/react";
+import { useColorModeValue } from "@chakra-ui/react";
 
 import { ShelterMeasure, SignalCard_signal } from "schema";
 
@@ -39,7 +39,7 @@ export const SignalCard: FC<SignalCardProps> = ({
   onClick,
   ...otherProps
 }) => {
-  const { name, measure, shelter, measurements } = signal ?? {};
+  const { name, measure, shelter } = signal ?? {};
 
   const cardBg = useColorModeValue("gray.100", "gray.700");
   const cardHoverBg = useColorModeValue("blue.50", "gray.600");
