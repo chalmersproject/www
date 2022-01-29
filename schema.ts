@@ -236,38 +236,6 @@ export interface ShelterEditorQueryVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: ShelterStatQuery
-// ====================================================
-
-export interface ShelterStatQuery_shelter_occupancy {
-  __typename: "ShelterSpace";
-  beds: number;
-  spots: number;
-}
-
-export interface ShelterStatQuery_shelter {
-  __typename: "Shelter";
-  id: string;
-  occupancy: ShelterStatQuery_shelter_occupancy;
-}
-
-export interface ShelterStatQuery {
-  /**
-   * Get a `Shelter` by its `ID`.
-   */
-  shelter: ShelterStatQuery_shelter | null;
-}
-
-export interface ShelterStatQueryVariables {
-  shelterId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: CreateSignalMutation
 // ====================================================
 
@@ -476,10 +444,24 @@ export interface HomeQuery {
 // GraphQL query operation: MapQuery
 // ====================================================
 
+export interface MapQuery_shelters_occupancy {
+  __typename: "ShelterSpace";
+  spots: number;
+  beds: number;
+}
+
+export interface MapQuery_shelters_capacity {
+  __typename: "ShelterSpace";
+  spots: number;
+  beds: number;
+}
+
 export interface MapQuery_shelters {
   __typename: "Shelter";
   id: string;
   location: any;
+  occupancy: MapQuery_shelters_occupancy;
+  capacity: MapQuery_shelters_capacity;
 }
 
 export interface MapQuery {
